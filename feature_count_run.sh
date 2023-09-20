@@ -24,8 +24,9 @@ annot_path=/groups/umcg-gdio/tmp01/umcg-kmaassen/resources/gtf/gencode.v34lift37
 cd $input_path
 
 # feature counts -p = paired end data=True, -s 1 = forward stranded? -a = annotation file
+# -T 8 = number of threads used, which is 8
 # -o output file, followed by the input BAM(s)
-featureCounts -p -s 1 \
+featureCounts -p -s 1 -T 8 \
     -a $annot_path \
     -o $output_path $input_path/*.bam
 
