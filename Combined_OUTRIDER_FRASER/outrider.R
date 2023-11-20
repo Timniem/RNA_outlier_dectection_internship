@@ -3,25 +3,35 @@
 #' 25-09-2023
 #' Argument 1= input path counts file
 #' Argument 2= output path
+#' Argument 3= external counts path
 
 library(OUTRIDER)
 library(dplyr)
 
+if(.Platform$OS.type == "unix") {
+    register(MulticoreParam(workers=min(10, multicoreWorkers())))
+} else {
+    register(SnowParam(workers=min(10, multicoreWorkers())))
+}
+
 args <- commandArgs(trailingOnly = TRUE)
 ctsTable <- read.table(args[1], header=TRUE, sep="\t")
-#qint <- strtoi(args[3])
 iter <- 15
+extctsTable <- read.table(args[3], header=TRUE, sep="\t")
+
+#Rename GeneID to EnsemblID
+colnames(extctsTable)[colnames(extctsTable) == 'geneID'] <- 'EnsemblID'
+
+#add external counts
+ctsTable <- merge(x=ctsTable, y=extctsTable, by=c("EnsemblID"), all=TRUE)
 
 #Keep the most complete annotation: Ensemble column 1
-
-#because entrez ID's and gene symbols are added, these need to be dropped.
-count_data_Ensembl <- ctsTable[,c(1,4:ncol(ctsTable))]
-
 #convert NA values to 0
+
+count_data_Ensembl <- ctsTable[,c(1:101)]
 count_data_Ensembl[is.na(count_data_Ensembl)] <- 0
 
 countDataMatrix <- as.matrix(count_data_Ensembl[ , -1])
-
 rownames(countDataMatrix) <- count_data_Ensembl[ , 1]
 
 ods <- OutriderDataSet(countData=countDataMatrix)

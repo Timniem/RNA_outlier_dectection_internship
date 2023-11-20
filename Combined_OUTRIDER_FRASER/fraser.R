@@ -1,7 +1,7 @@
 #' FRASER autoencoder find q
 #' Script creates ods objects
 #' 28-10-2023
-#' Argument 1= input path counts file
+#' Argument 1= input path annot file
 #' Argument 2= output path
 
 library(FRASER)
@@ -28,8 +28,8 @@ for(i in psiTypes){
     fds <- optimHyperParams(fds, type=i, plot=FALSE)
     bestQ(fds, i)
 }
-fds <- FRASER(fds, implementation="PCA", iterations=15)
+fds <- FRASER(fds, implementation="PCA-BB-Decoder", iterations=15)
 fds <- calculatePadjValues(fds, method="BY")
 fds <- calculateZscore(fds)
 
-saveFraserDataSet(fds, dir=args[2], name=args[3])
+saveFraserDataSet(fds, dir=args[2], name="fraser_out")

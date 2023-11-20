@@ -19,11 +19,6 @@ while [[ $# -gt 0 ]]; do
             shift # past argument
             shift # past value
             ;;
-        -f|--filename)
-            FILENAME="$2"
-            shift # past argument
-            shift # past value
-            ;;
         -o|--output)
             OUTPUT="$2"
             shift # past argument
@@ -43,12 +38,10 @@ done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
 echo "Samplesheet= ${SAMPLESHEET}"
-echo "File name= ${FILENAME}"
 echo "Output= ${OUTPUT}"
 
 eval "$(conda shell.bash hook)"
 source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
 mamba activate fraser_env
 
-Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/fraser/fraser_findq_run.R $SAMPLESHEET $OUTPUT $FILENAME
-
+Rscript Combined_OUTRIDER_FRASER/fraser.R $SAMPLESHEET $OUTPUT
