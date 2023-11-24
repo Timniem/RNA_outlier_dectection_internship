@@ -18,6 +18,7 @@ s2_bams <- samplesheet$bamFile[which(samplesheet$strandSpecific == 2)]
 
 count_data <- list()
 
+
 #Check for strand specificity and append different count matrices to count_matrices
 if (length(s0_bams) >= 1 ){
     fc0 <- featureCounts(s0_bams, annot.ext=annot_path, isGTFAnnotationFile=TRUE, nthreads=10, isPairedEnd=TRUE, strandSpecific=0)
