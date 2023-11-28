@@ -32,4 +32,8 @@ fds <- FRASER(fds, implementation="PCA-BB-Decoder", iterations=15)
 fds <- calculatePadjValues(fds, method="BY")
 fds <- calculateZscore(fds)
 
+register(SerialParam())
+res <- as.data.table(results(fds, zScoreCutoff=NA, padjCutoff=NA, deltaPsiCutoff=NA))
+
 saveFraserDataSet(fds, dir=args[2], name="fraser_out")
+write.table(res, 'result_table_jcts.tsv', append = FALSE)

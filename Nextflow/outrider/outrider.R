@@ -2,8 +2,8 @@
 #' Script creates ods objects
 #' 25-09-2023
 #' Argument 1= input path counts file
-#' Argument 2= output path
-#' Argument 3= external counts path - not now
+#' Argument 2= output path ods
+#' Argument 3= output path res
 
 library(OUTRIDER)
 library(dplyr)
@@ -16,7 +16,11 @@ if(.Platform$OS.type == "unix") {
 
 args <- commandArgs(trailingOnly = TRUE)
 ctsTable <- read.table(args[1], header=TRUE, sep="\t")
+rds_out <- args[2]
+res_out <- args[3]
 iter <- 15
+
+#External counts will be added in a different script, before this one.
 #extctsTable <- read.table(args[3], header=TRUE, sep="\t")
 
 #Rename GeneID to EnsemblID
@@ -49,4 +53,10 @@ opt_q <- getBestQ(ods)
 
 ods <- controlForConfounders(ods, q=opt_q, iterations=iter)
 
-saveRDS(ods, file=args[2])
+ods <- computePvalues(ods, alternative="two.sided", method="BY")
+ods <- computeZscores(ods)
+res <- results(ods, all=TRUE)
+
+#Output the outrider dataset file, and the results table. 
+saveRDS(ods, file=rds_out)
+write.table(res, res_out, append = FALSE)

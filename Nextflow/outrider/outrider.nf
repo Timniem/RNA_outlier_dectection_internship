@@ -1,11 +1,12 @@
 #!/usr/bin/env nextflow
 /**
 Nextflow OUTRIDER workflow
+using Rsubreads featureCounts to get count matrices, uses Gagneur-lab OUTRIDER
+for calling outliers. 
+Results will be stored in a outrider dataset (*.rds) and a resultsfile (*.tsv)
 
 **/
 nextflow.enable.dsl=2
-
-params.samplesheet = '/groups/umcg-gdio/tmp01/umcg-tniemeijer/outrider_fraser/sampletables/sampletable.tsv'
 
 process FeatureCount {
     time '1h'
@@ -48,7 +49,7 @@ process Outrider_R {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate outrider_env
-        Rscript ${projectDir}/resources/outrider/outrider.R "${outriderCounts}" "outrider_${mode}.rds"
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/Nextflow/outrider/outrider.R "${outriderCounts}" "outrider_${mode}.rds" "result_table_${mode}.tsv"
         """
 }
 

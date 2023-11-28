@@ -1,5 +1,5 @@
 /**
-Nextflow main OUTRIDER FRASER Workflow
+Nextflow main OUTRIDER and FRASER Workflow
 
 **/
 nextflow.enable.dsl=2

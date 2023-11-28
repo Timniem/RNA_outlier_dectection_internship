@@ -16,6 +16,6 @@ process Fraser {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate fraser_env
-        Rscript ${projectDir}/resources/fraser/fraser.R ${params.samplesheet} ${params.output}
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/Nextflow/fraser/fraser.R ${params.samplesheet} ${params.output}
         """
 }
