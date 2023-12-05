@@ -14,5 +14,5 @@ workflow Outrider_gene {
 
 workflow {
     Outrider_gene()
-    Fraser()
+    Fraser(params.extcounts.blood.annotation_file, params.extcounts.blood.split_counts, params.extcounts.blood.non_split_counts)
 }
