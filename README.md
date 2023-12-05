@@ -4,4 +4,4 @@
 
 
 ## RNA-seq Outlier Dashboard
-![alt text]([https://github.com/Timniem/RNA_outlier_dectection_internship/blob/main/RNA-seq%20outlier%20analysis.png/?raw=true)
+![plot]([https://github.com/Timniem/RNA_outlier_dectection_internship/blob/main/RNA-seq%20outlier%20analysis.png)
