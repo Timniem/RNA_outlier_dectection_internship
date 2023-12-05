@@ -19,7 +19,7 @@ s2_bams <- samplesheet$bamFile[which(samplesheet$strandSpecific == 2)]
 count_data <- list()
 
 
-#Check for strand specificity and append different count matrices to count_matrices
+# Check for strand specificity and append different count matrices to count_matrices
 if (length(s0_bams) >= 1 ){
     fc0 <- featureCounts(s0_bams, annot.ext=annot_path, isGTFAnnotationFile=TRUE, nthreads=10, allowMultiOverlap=TRUE, isPairedEnd=TRUE, strandSpecific=0)
     count_data[[length(count_data) + 1]] <- fc0
@@ -42,9 +42,6 @@ for (data in count_data) {
 
 # Merge the count files from different stranded samples.
 ctsTable <- Reduce(function(x, y) merge(x, y, by.x = 'GeneID', by.y = 'GeneID', all.x = TRUE), count_matrices)
-
-
-colnames(ctsTable)[colnames(ctsTable) == 'GeneID'] <- 'EnsemblID'
 
 # Rename sample names with the sample names from the provided .tsv.
 range <- 1:length(samplesheet$bamFile)

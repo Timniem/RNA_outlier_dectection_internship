@@ -6,10 +6,16 @@ nextflow.enable.dsl=2
 
 process Fraser {
     time '6h'
-    memory '100 GB'
+    memory '64 GB'
     cpus 10
 
     publishDir "$params.output/fraser", mode: 'copy'
+
+    output:
+
+        path "splitcounts.tsv"
+        path "nonsplitcounts.tsv"
+        path "result_table_jcts.tsv"
 
     script: 
         """
