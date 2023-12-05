@@ -1,7 +1,6 @@
 
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-import matplotlib.patches as mpatches
 import numpy as np
 
 
@@ -14,22 +13,29 @@ class PlotFunctions:
     def __init__(self):
         pass
 
-    def scatter_plot(data, patient, p_cutoff=0.05,z_cutoff=4):
+    def scatter_plot(data, patient, gene_panel, p_cutoff=0.05, psi_cutoff=0.1):
+        data = data.replace([np.inf, -np.inf], 1)
+        data = data.replace(np.NaN, 1)
         data = data[data.sampleID == patient].reset_index()
-        significant_data = data[(data.padjust < p_cutoff) & (abs(data.zScore) > z_cutoff)]
-        rest_data = data[(data.padjust > p_cutoff) | (abs(data.zScore) < z_cutoff)]
-        x_range = rest_data.zScore
+        if gene_panel != 'none':
+            with open(f'gene_panels/{gene_panel}.txt') as gene_file:
+                genes = [line.strip() for line in gene_file]
+            significant_data = data[(data.padjust < p_cutoff) & (abs(data.deltaPsi) > psi_cutoff) & (data.hgncSymbol.isin(genes))]
+            rest_data = data[(data.padjust > p_cutoff) | (abs(data.deltaPsi) < psi_cutoff) | (~data.hgncSymbol.isin(genes))]
+        else:
+            significant_data = data[(data.padjust < p_cutoff) & (abs(data.deltaPsi) > psi_cutoff)]
+            rest_data = data[(data.padjust > p_cutoff) | (abs(data.deltaPsi) < psi_cutoff)]
+        x_range = rest_data.deltaPsi
         y_range = -np.log(rest_data.pValue)
-        sx_range = significant_data.zScore
+        sx_range = significant_data.deltaPsi
         sy_range = -np.log(significant_data.pValue)
         fig, ax = plt.subplots(figsize=(3.5,3.5))
-        ax.scatter(x=x_range, y=y_range, color='grey', alpha=1, s=6)
-        ax.scatter(x=sx_range, y=sy_range, color='red', alpha=1, s=6)
+        ax.scatter(x=x_range, y=y_range, color='grey', alpha=.6, s=8, edgecolors='none')
+        ax.scatter(x=sx_range, y=sy_range, color='blue', alpha=.6, s=8, edgecolors='none')
         ax.set_yscale('linear')
         ax.set_ylabel("-log10(p value)", size=8)
-        ax.set_xlabel("Z score", size=8)
-        z_bound = max(abs(min(data.zScore)),abs(max(data.zScore)))+1
-        ax.set_xbound(lower=-z_bound,upper=z_bound)
+        ax.set_xlabel("deltaPsi", size=8)
+        ax.set_xbound(lower=-1.1,upper=1.1)
         ax.grid(False)
         ax.set_title(f'{data.sampleID.unique()[0]}', size=8)
         ax.spines['top'].set_visible(False)
@@ -37,16 +43,8 @@ class PlotFunctions:
         ax.spines['bottom'].set_visible(False)
         ax.spines['left'].set_visible(False)
         ax.yaxis.set_major_formatter(plt.FormatStrFormatter('%.f'))
-        ax.xaxis.set_major_formatter(plt.FormatStrFormatter('%.f'))
+        ax.xaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
         significant_data = significant_data.sort_values("pValue")
-        offset_x = .2
-        offset_y = 0
-        outliers = len(significant_data.index)
-        if  outliers > 0:
-            for i in range(outliers):
-                row = significant_data.iloc[i]
-                ax.text(x=row.zScore+offset_x, y=-np.log(row.pValue)-offset_y, s=row.geneID, size=6)
-                offset_y += .5
         plt.tight_layout()
         plt.close()
         return fig
