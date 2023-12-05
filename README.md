@@ -17,5 +17,7 @@ It is written mainly in Panel (Holoviz), and can be accessed by serving the jupy
 
 
 
-* https://github.com/gagneurlab/drop
+
+'* https://github.com/gagneurlab/drop
+
 ** https://github.com/molgenis/vip
