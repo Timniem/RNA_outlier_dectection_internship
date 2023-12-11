@@ -26,11 +26,11 @@ process OutriderCount {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate outrider_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/Nextflow/outrider/featurecounts.R ${params.samplesheet} ${gtf} "outrider_counts_${mode}.txt"
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/outrider/featurecounts.R ${params.samplesheet} ${gtf} "outrider_counts_${mode}.txt"
         """
 }
 
-process Outrider_R {
+process Outrider {
     time '8h'
     memory '100 GB'
     cpus 20
@@ -50,6 +50,6 @@ process Outrider_R {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate outrider_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/Nextflow/outrider/outrider.R "${outriderCounts}" "outrider_${mode}.rds" "result_table_${mode}.tsv" "${params.samplesheet}" "${externalCounts}"
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/outrider/outrider.R "${outriderCounts}" "outrider_${mode}.rds" "result_table_${mode}.tsv" "${params.samplesheet}" "${externalCounts}"
         """
 }
