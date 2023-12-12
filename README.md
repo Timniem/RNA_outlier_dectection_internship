@@ -1,7 +1,7 @@
 # RNA_outlier_dectection_internship
 
 ## Nextflow RNA-seq pipeline
-This pipeline written in Nextflow will yield outlier results for gene expression and splicing. It consists of several modules of the DROP pipeline* (gagneur-lab) and is made to be compatible for VIP** integration in the near future.
+This pipeline written in Nextflow will yield outlier results for gene expression and splicing. It consists of several modules of the DROP pipeline* both OUTRIDER and FRASER (gagneur-lab) and is made to be compatible for VIP** integration in the near future.
 The MAE (mono allelic expression) is currently not implemented but is scheduled for a future release.
 
 Input for the pipeline is an annotation file with paths to the BAM files and several processing options.
@@ -18,6 +18,6 @@ It is written mainly in Panel (Holoviz), and can be accessed by serving the jupy
 
 
 
-'* https://github.com/gagneurlab/drop
+'* https://github.com/gagneurlab/drop | https://github.com/gagneurlab/OUTRIDER | https://github.com/gagneurlab/FRASER
 
 ** https://github.com/molgenis/vip
