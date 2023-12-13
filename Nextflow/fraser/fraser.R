@@ -28,8 +28,8 @@ args <- commandArgs(trailingOnly = TRUE)
 settingsTable <- fread(args[3])
 original_settingsTable <- fread(args[1])
 
-junctionCts <- fread(system.file(args[4], package="FRASER", mustWork=TRUE))
-spliceSiteCts <- fread(system.file(args[5], package="FRASER", mustWork=TRUE))
+junctionCts <- fread(args[4])
+spliceSiteCts <- fread(args[5])
 
 fds <- FraserDataSet(colData=settingsTable, junctions=junctionCts, spliceSites=spliceSiteCts, workingDir=workdir)
 

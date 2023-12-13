@@ -29,6 +29,13 @@ for (file in splitfiles) {
 splitcounts <- Reduce(function(x, y) merge(x, y, all=TRUE), count_dfs)
 splitcounts[is.na(splitcounts)] <- 0 # replace the NA's with 0's
 
+setwd(file.path(workdir,'savedObjects/Data_Analysis/splitCounts/'))
+
+#Add startID and stopID
+se <- readRDS("se.rds")
+start_end_ID <- as.data.frame(rowData(se))
+splitcounts <- cbind(start_end_ID, splitcounts)
+
 
 # read .rds for nonsplitcounts
 setwd(file.path(workdir,'savedObjects/Data_Analysis/nonSplitCounts/'))
@@ -48,9 +55,11 @@ extnonsplitcounts <- fread(args[5])
 
 combsettingsTable <- rbind(settingsTable, extsettingsTable)
 
-# remove start and stop IDs from the external splitcounts
+# remove start and stop IDs from the external splitcounts and SplicesiteID from nonsplitcounts
 extsplitcounts$startID <- NULL
-extsplitcounts$stopID <- NULL
+extsplitcounts$endID <- NULL
+extnonsplitcounts$spliceSiteID <- NULL
+
 
 # strand to '*' for the time being, strange behaviour because strandedness is used in counting.
 # maybe due to the reversed strandedness on some samples?
@@ -60,7 +69,20 @@ extnonsplitcounts$strand <- '*'
 
 # External counts are added to the counts from the samples in the samplesheet.
 splitcounts <- merge(x=splitcounts, y=extsplitcounts, by=c("seqnames", "start", "end", "width", "strand"), all=TRUE)
-nonsplitcounts <- merge(x=nonsplitcounts, y=extnonsplitcounts, by=c("seqnames", "start", "end", "width", "strand", "spliceSiteID", "type"), all=TRUE)
+nonsplitcounts <- merge(x=nonsplitcounts, y=extnonsplitcounts, by=c("seqnames", "start", "end", "width", "strand", "type"), all=TRUE)
+
+
+# NA id's will be dropped and NA count for external counts will be set to 0
+splitcounts <- splitcounts[!is.na(splitcounts$startID) & !is.na(splitcounts$endID), ]
+nonsplitcounts <- nonsplitcounts[!is.na(nonsplitcounts$spliceSiteID),]
+
+splitcounts[is.na(splitcounts)] <- 0
+nonsplitcounts[is.na(nonsplitcounts)] <- 0
+
+splitcounts$startID <- NULL
+splitcounts$endID <- NULL
+nonsplitcounts$spliceSiteID <- NULL
+
 
 write.table(combsettingsTable, 'settingstable_fraser.tsv', sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
 write.table(splitcounts, 'splitcounts_fraser.tsv', sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
