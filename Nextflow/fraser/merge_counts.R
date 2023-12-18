@@ -68,8 +68,8 @@ extsplitcounts$strand <- '*'
 extnonsplitcounts$strand <- '*'
 
 # External counts are added to the counts from the samples in the samplesheet.
-splitcounts <- merge(x=splitcounts, y=extsplitcounts, by=c("seqnames", "start", "end", "width", "strand"), all=TRUE)
-nonsplitcounts <- merge(x=nonsplitcounts, y=extnonsplitcounts, by=c("seqnames", "start", "end", "width", "strand", "type"), all=TRUE)
+splitcounts <- merge(x=splitcounts, y=extsplitcounts, by=c("seqnames", "start", "end", "width", "strand"), all.x=TRUE)
+nonsplitcounts <- merge(x=nonsplitcounts, y=extnonsplitcounts, by=c("seqnames", "start", "end", "width", "strand", "type"), all.x=TRUE)
 
 
 # NA id's will be dropped and NA count for external counts will be set to 0
@@ -79,9 +79,9 @@ nonsplitcounts <- nonsplitcounts[!is.na(nonsplitcounts$spliceSiteID),]
 splitcounts[is.na(splitcounts)] <- 0
 nonsplitcounts[is.na(nonsplitcounts)] <- 0
 
-splitcounts$startID <- NULL
-splitcounts$endID <- NULL
-nonsplitcounts$spliceSiteID <- NULL
+#splitcounts$startID <- NULL
+#splitcounts$endID <- NULL
+#nonsplitcounts$spliceSiteID <- NULL keep splice site IDs?
 
 
 write.table(combsettingsTable, 'settingstable_fraser.tsv', sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
