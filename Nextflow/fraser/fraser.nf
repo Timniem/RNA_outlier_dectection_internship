@@ -18,7 +18,7 @@ process FraserCount {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate fraser_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/frasercounts.R ${params.samplesheet} "${params.output}/tmp"
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/frasercounts.R ${params.samplesheet} "${params.output}"
         touch "./count.done" 
         """
 }
@@ -29,27 +29,22 @@ process MergeCounts {
     memory '32 GB'
     cpus 10
 
-    publishDir "$params.output/fraser", mode: 'copy'
-
     input:
-        path countcheck
-        path ext_sampletable
-        path ext_splitcounts
-        path ext_nonsplitcounts
+        path count_check
+        path ext_counts
         
 
     output:
 
-        path "settingstable_fraser.tsv", emit: settingstable_fraser
-        path "splitcounts_fraser.tsv", emit: splitcounts_fraser
-        path "nonsplitcounts_fraser.tsv", emit: nonsplitcounts_fraser
+        path "./merge.done" 
 
     script: 
         """
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate fraser_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/merge_counts.R ${params.samplesheet} "${params.output}/tmp" ${ext_sampletable} ${ext_splitcounts} ${ext_nonsplitcounts}
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/merge_counts.R "${params.output}" ${ext_counts}
+        touch "./merge.done"
         """
 
 }
@@ -62,9 +57,7 @@ process Fraser {
     publishDir "$params.output/fraser", mode: 'copy'
 
     input:
-        path sampletable
-        path splitcounts
-        path nonsplitcounts
+        path merge_check
 
     output:
 
@@ -75,6 +68,6 @@ process Fraser {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate fraser_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/fraser.R ${params.samplesheet} ${params.output} ${sampletable} ${splitcounts} ${nonsplitcounts}
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/fraser.R ${params.samplesheet} ${params.output}
         """
 }

@@ -3,11 +3,8 @@
 #' Processes start from a samplesheet with SampleID's BAM paths featurecount settings etc. 
 #' and creates fraser rds object and results .tsv
 #' 28-10-2023
-#' Argument 1= input path annot file
-#' Argument 2= output path
-#' Argument 3= external data annotation file
-#' Argument 4= external splitreadcounts
-#' Argument 5= external nonsplitreadcounts
+#' Argument 1: Samplesheet
+#' Argument 2= input/output folder
 
 library(FRASER)
 library(dplyr)
@@ -25,15 +22,9 @@ workdir <- args[2]
 
 # Load original sample table
 args <- commandArgs(trailingOnly = TRUE)
-settingsTable <- fread(args[3])
 original_settingsTable <- fread(args[1])
 
-junctionCts <- fread(args[4])
-spliceSiteCts <- fread(args[5])
-
-fds <- FraserDataSet(colData=settingsTable, junctions=junctionCts, spliceSites=spliceSiteCts, workingDir=workdir)
-
-fds <- calculatePSIValues(fds)
+fds <- loadFraserDataSet(dir=workdir)
 fds <- filterExpressionAndVariability(fds, minDeltaPsi=0, filter=FALSE)
 fds <- fds[mcols(fds, type="j")[,"passed"],]
 
