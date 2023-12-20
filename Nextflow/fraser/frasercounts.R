@@ -1,0 +1,29 @@
+#' FRASER count new samples
+#' Gagneur-lab FRASER (2.0)
+#' Processes start from a samplesheet with SampleID's BAM paths featurecount settings etc. 
+#' and creates fraser rds object and results .tsv
+#' 28-10-2023
+#' Argument 1= input path annot file
+#' Argument 2= output path
+
+library(FRASER)
+library(dplyr)
+
+args <- commandArgs(trailingOnly = TRUE)
+
+# Setup parallelisation
+if(.Platform$OS.type == "unix") {
+    register(MulticoreParam(workers=min(10, multicoreWorkers())))
+} else {
+    register(SnowParam(workers=min(10, multicoreWorkers())))
+}
+
+workdir <- args[2]
+
+# Load original sample table
+args <- commandArgs(trailingOnly = TRUE)
+settingsTable <- fread(args[1])
+fds <- FraserDataSet(colData=settingsTable, workingDir=workdir)
+fds <- countRNAData(fds)
+fds <- calculatePSIValues(fds)
+fds <- saveFraserDataSet(fds)
