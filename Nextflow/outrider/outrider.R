@@ -23,9 +23,11 @@ rds_out_path <- args[2]
 res_out_path <- args[3]
 iter <- 15
 
+extctspath <- file.path(args[5],"geneCounts.tsv.gz")
+
 # Add external Counts
 if (length(args) == 5){
-    extctsTable <- read.table(args[5], header=TRUE, sep="\t")
+    extctsTable <- read.table(gzfile(extctspath), header=TRUE, sep="\t")
     ctsTable <- merge(x=ctsTable, y=extctsTable, by=c("GeneID"), all=TRUE)
 }
 
