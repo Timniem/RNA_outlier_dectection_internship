@@ -12,7 +12,7 @@ workflow Outrider_gene {
     Outrider('gene',OutriderCount.out, params.extcounts.blood)
 }
 
-workflow Fraser {
+workflow Fraser_noext {
     FraserCount()
     Fraser(FraserCounts.out)
 }
@@ -24,6 +24,6 @@ workflow Fraser_ext {
 }
 
 workflow {
-    //Outrider_gene()
+    Outrider_gene()
     Fraser_ext()
 }
