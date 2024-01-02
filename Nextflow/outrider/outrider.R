@@ -9,6 +9,9 @@
 
 library(OUTRIDER)
 library(dplyr)
+library("AnnotationDbi")
+library("org.Hs.eg.db")
+library("data.table")
 
 if(.Platform$OS.type == "unix") {
     register(MulticoreParam(workers=min(20, multicoreWorkers())))
@@ -61,5 +64,18 @@ saveRDS(ods, file=rds_out_path)
 
 # Filter data based on samples present in samplesheet
 res <- res[res$sampleID %in% samplesheet$sampleID]
+
+# Get genesymbols and reorder the dataframe
+Ensembl_stripped <- unlist(lapply(strsplit(as.character(res$geneID), "[.]"), '[[', 1))
+
+res$GeneSymbol = mapIds(org.Hs.eg.db,
+                    keys=Ensembl_stripped, 
+                    column="SYMBOL",
+                    keytype="ENSEMBL",
+                    multiVals="first")
+
+names(res)[names(res) == 'geneID'] <- 'EnsemblID'
+
+res <- res[,c(16,1:15)]
 
 write.table(res, res_out_path, sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
