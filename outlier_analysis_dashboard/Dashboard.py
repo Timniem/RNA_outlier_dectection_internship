@@ -2,30 +2,35 @@ from Widgets import Widgets
 import panel as pn
 
 class Dashboard:
-    def __init__(self, data):
-        self.data = data
-        self.widgets = Widgets(data=self.data, data_type=['genes','introns','exons','junctions'], genepanels=['none','PID'])
+    def __init__(self, fraser_data, outrider_data):
+        self.fraser_data = fraser_data
+        self.outrider_data = outrider_data
+        self.widgets = Widgets(fraser_data=self.fraser_data, outrider_data=self.outrider_data, genepanels=['none','PID'])
 
     def run(self):
-        # Instantiate the template with widgets displayed in the sidebar
         template = pn.template.BootstrapTemplate(
             title='RNA-seq outlier analysis'
                     )
-        # Append a layout to the main area, to demonstrate the list-like API
+        
         template.main.append(
             pn.Column(
                 pn.Row(
-                    pn.Card(self.widgets.tab, title='Outliers table'),
-                    pn.Card(self.widgets.scatter_plot_app(), title='Volcano plot'),
+                    pn.Card(self.widgets.fraser_tab, title='Outliers FRASER'),
+                    pn.Card(self.widgets.scatter_plot_fraser(), title='Volcano FRASER'),
                 ),
-                pn.Row(pn.Card(self.widgets.sashimi_pdf('DATA/sashimi_PLCG2.pdf'), title="Sashimi plot", width=1340, height=850))
+                pn.Row(
+                    pn.Card(self.widgets.outrider_tab, title='Outliers OUTRIDER'),
+                    pn.Card(self.widgets.scatter_plot_outrider(), title='Volcano OUTRIDER'))
                 )
             )
         template.sidebar.extend([self.widgets.select_patient,
                                 self.widgets.genepanel_filter,
-                                self.widgets.select_datatype,
-                                self.widgets.pval_slider,
-                                self.widgets.delta_psi_slider,
                                 self.widgets.gene_input,
-                                self.widgets.refresh_button])
+                                self.widgets.hpo_input,
+                                pn.widgets.StaticText(name='controls', value="FRASER"),
+                                self.widgets.pval_slider_fraser,
+                                self.widgets.delta_psi_slider,
+                                pn.widgets.StaticText(name='controls', value="OUTRIDER"),
+                                self.widgets.pval_slider_outrider,
+                                self.widgets.zscore_slider])
         return template
