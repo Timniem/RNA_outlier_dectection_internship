@@ -21,7 +21,7 @@ if(.Platform$OS.type == "unix") {
 workdir <- args[2]
 
 # Load original sample table
-args <- commandArgs(trailingOnly = TRUE)
+
 original_settingsTable <- fread(args[1])
 
 fds <- loadFraserDataSet(dir=workdir)
