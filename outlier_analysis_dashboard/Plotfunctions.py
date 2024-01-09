@@ -85,9 +85,39 @@ class PlotFunctions:
         plt.close()
         return fig
     
-    def sashimi_plot(self, bam, chr_start, chr_stop):
-        """
-        function takes bam, chr start/stop, and a gtf annotation file and creates sashimi plot
-        Not yet implemented.
-        """
-
+    def mae_plot(data, patient, gene_panel, p_cutoff=0.05, log2fc_cutoff=5):
+        data = data.replace([np.inf, -np.inf], 1)
+        data = data.replace(np.NaN, 1)
+        data = data[data.sampleID == patient].reset_index()
+        if gene_panel != 'none':
+            with open(f'resources/gene_panels/{gene_panel}.txt') as gene_file:
+                genes = [line.strip() for line in gene_file]
+            significant_data = data[(data.padj < p_cutoff) & (abs(data.log2FC) > log2fc_cutoff) & (data.hgncSymbol.isin(genes))]
+            rest_data = data[(data.padj > p_cutoff) | (abs(data.log2FC) < log2fc_cutoff) | (~data.hgncSymbol.isin(genes))]
+        else:
+            significant_data = data[(data.padj < p_cutoff) & (abs(data.log2FC) > log2fc_cutoff)]
+            rest_data = data[(data.padj > p_cutoff) | (abs(data.log2FC) < log2fc_cutoff)]
+    
+        x_range = rest_data.log2FC
+        y_range = -np.log(rest_data.pvalue)
+        sx_range = significant_data.log2FC
+        sy_range = -np.log(significant_data.pvalue)
+        fig, ax = plt.subplots(figsize=(3.5,3.5))
+        ax.scatter(x=x_range, y=y_range, color='grey', alpha=.6, s=8, edgecolors='none')
+        ax.scatter(x=sx_range, y=sy_range, color='blue', alpha=.6, s=8, edgecolors='none')
+        ax.set_yscale('linear')
+        ax.set_ylabel("-log10(p value)", size=8)
+        ax.set_xlabel("log2FC", size=8)
+        ax.set_xbound(lower=-20,upper=20)
+        ax.grid(False)
+        ax.set_title(f'{patient}', size=8)
+        ax.spines['top'].set_visible(False)
+        ax.spines['right'].set_visible(False)
+        ax.spines['bottom'].set_visible(False)
+        ax.spines['left'].set_visible(False)
+        ax.yaxis.set_major_formatter(plt.FormatStrFormatter('%.f'))
+        ax.xaxis.set_major_formatter(plt.FormatStrFormatter('%.1f'))
+        significant_data = significant_data.sort_values("pvalue")
+        plt.tight_layout()
+        plt.close()
+        return fig
