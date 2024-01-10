@@ -9,37 +9,38 @@ class Dashboard:
         self.widgets = Widgets(fraser_data=self.fraser_data, outrider_data=self.outrider_data, mae_data=self.mae_data, genepanels=['none','PID'])
 
     def run(self):
-        template = pn.template.BootstrapTemplate(
-            title='RNA-seq outlier analysis'
-                    )
-        
-        template.main.append(
+        template = pn.Column(
+            pn.pane.Markdown(
+            """
+            # RNA seq outliers dashboard
+
+            """, styles={'background': '#f3f3f3'}, width=1805
+        ),
+            pn.Row(
+            pn.Column(pn.Row(self.widgets.select_patient),
+                                pn.Row(self.widgets.genepanel_filter),
+                                pn.Row(self.widgets.gene_input),
+                                pn.Row(self.widgets.hpo_input),
+                                pn.Row(pn.widgets.StaticText(name='controls', value="FRASER")),
+                                pn.Row(self.widgets.pval_slider_fraser),
+                                pn.Row(self.widgets.delta_psi_slider),
+                                pn.Row(pn.widgets.StaticText(name='controls', value="OUTRIDER")),
+                                pn.Row(self.widgets.pval_slider_outrider),
+                                pn.Row(self.widgets.zscore_slider),
+                                pn.Row(pn.widgets.StaticText(name='controls', value="MAE")),
+                                pn.Row(self.widgets.pval_slider_mae),
+                                pn.Row(self.widgets.log2fc_slider_mae)),
             pn.Column(
                 pn.Row(
-                    pn.Card(self.widgets.fraser_tab, title='Outliers FRASER'),
-                    pn.Card(self.widgets.scatter_plot_fraser(), title='Volcano FRASER'),
+                    pn.Card(pn.Row(self.widgets.fraser_tab, self.widgets.scatter_plot_fraser(), styles={'background': '#f3f3f3'}), title='Splicing outliers FRASER'),
                 ),
                 pn.Row(
-                    pn.Card(self.widgets.outrider_tab, title='Outliers OUTRIDER'),
-                    pn.Card(self.widgets.scatter_plot_outrider(), title='Volcano OUTRIDER')
+                    pn.Card(pn.Row(self.widgets.outrider_tab, self.widgets.scatter_plot_outrider(), styles={'background': '#f3f3f3'}), title='Expression outliers OUTRIDER')
                 ),
                 pn.Row(
-                    pn.Card(self.widgets.mae_tab, title='MAE variants'),
-                    pn.Card(self.widgets.mae_plot(), title='MAE plot')
+                    pn.Card(pn.Row(self.widgets.mae_tab, self.widgets.mae_plot(), styles={'background': '#f3f3f3'}), title='Mono Allelic Expression variants')
                 )
                 )
             )
-        template.sidebar.extend([self.widgets.select_patient,
-                                self.widgets.genepanel_filter,
-                                self.widgets.gene_input,
-                                self.widgets.hpo_input,
-                                pn.widgets.StaticText(name='controls', value="FRASER"),
-                                self.widgets.pval_slider_fraser,
-                                self.widgets.delta_psi_slider,
-                                pn.widgets.StaticText(name='controls', value="OUTRIDER"),
-                                self.widgets.pval_slider_outrider,
-                                self.widgets.zscore_slider,
-                                pn.widgets.StaticText(name='controls', value="MAE"),
-                                self.widgets.pval_slider_mae,
-                                self.widgets.log2fc_slider_mae])
+        )
         return template
