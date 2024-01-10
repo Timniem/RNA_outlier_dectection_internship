@@ -68,7 +68,7 @@ res <- res[res$sampleID %in% samplesheet$sampleID]
 # Get genesymbols and reorder the dataframe
 Ensembl_stripped <- unlist(lapply(strsplit(as.character(res$geneID), "[.]"), '[[', 1))
 
-res$GeneSymbol = mapIds(org.Hs.eg.db,
+res$hgncSymbol = mapIds(org.Hs.eg.db,
                     keys=Ensembl_stripped, 
                     column="SYMBOL",
                     keytype="ENSEMBL",

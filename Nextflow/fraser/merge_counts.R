@@ -28,6 +28,6 @@ countfiles <- c(k_j=file.path(ext_dir,"k_j_counts.tsv.gz"), k_theta=file.path(ex
 
 annot <- fread(file.path(ext_dir,"sampleAnnotation.tsv"))
 
-samples <- annot$sampleID[1:50]
+samples <- annot$sampleID[1:100]
 fds <- mergeExternalData(fds = fds ,countFiles = countfiles, sampleIDs = samples, annotation = annot)
 fds <- saveFraserDataSet(fds)
