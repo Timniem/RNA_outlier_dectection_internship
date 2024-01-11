@@ -1,6 +1,6 @@
 /**
-Nextflow main OUTRIDER and FRASER Workflow
-
+Nextflow main OUTRIDER, FRASER and MAE Workflow
+author: T Niemeijer
 **/
 nextflow.enable.dsl=2
 
@@ -28,7 +28,9 @@ workflow MonoAllelicExpression {
     Channel
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )
-    .map { row -> tuple( row.sampleID, file(row.vcf), file(row.bamFile) ) } | MAEreadCounting
+    .map { row -> tuple( row.sampleID, row.vcf, row.bamFile ) }
+    .filter { it[1] != null }
+    .filter { it[1] != "NA" } | MAEreadCounting
     GetMAEresults(MAEreadCounting.out)
 }
 
