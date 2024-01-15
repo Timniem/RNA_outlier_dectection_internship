@@ -76,6 +76,6 @@ res$hgncSymbol = mapIds(org.Hs.eg.db,
 
 names(res)[names(res) == 'geneID'] <- 'EnsemblID'
 
-res <- res[,c(16,1:15)]
+res <- res[,c(16,1:15)] # Get Symbol in first position.
 
 write.table(res, res_out_path, sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)

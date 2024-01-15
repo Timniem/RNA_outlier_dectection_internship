@@ -19,7 +19,7 @@ process OutriderCount {
         val gtf
     output:
         path "outrider_counts_${mode}.txt"
-    
+        path "outrider_count_summary.tsv"
     script:
         """
         echo "${gtf}"

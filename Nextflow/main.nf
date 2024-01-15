@@ -10,7 +10,7 @@ include { MAEreadCounting; GetMAEresults } from "./MAE/MAE"
 
 workflow Outrider_gene {
     OutriderCount('gene', params.featurecounts.genes_gtf)
-    Outrider('gene',OutriderCount.out, params.extcounts.blood)
+    Outrider('gene',OutriderCount.out[0], params.extcounts.blood)
 }
 
 workflow Fraser_noext {
@@ -36,6 +36,6 @@ workflow MonoAllelicExpression {
 
 workflow {
     Outrider_gene()
-    Fraser_ext()
-    MonoAllelicExpression()
+    //Fraser_ext()
+    //MonoAllelicExpression()
 }

@@ -1,4 +1,4 @@
-#' FRASER count mer
+#' FRASER count merge
 #' Gagneur-lab FRASER (2.0)
 #' Processes start from a samplesheet with SampleID's BAM paths featurecount settings etc. 
 #' and creates fraser rds object and results .tsv
