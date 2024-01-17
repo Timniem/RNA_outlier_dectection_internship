@@ -43,4 +43,7 @@ saveFraserDataSet(fds, dir=workdir, name="fraser_out")
 
 res <- res[res$sampleID %in% original_settingsTable$sampleID]
 
-write.table(res, 'result_table_fraser.tsv', sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
+for (sampleid in unique(res$sampleID)){
+    sample_out_path = paste(sampleid, 'result_table_fraser.tsv', sep='_')
+    write.table(res[res$sampleID == sampleid], sample_out_path, sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
+}

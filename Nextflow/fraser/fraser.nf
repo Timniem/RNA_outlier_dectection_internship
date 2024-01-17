@@ -61,7 +61,7 @@ process Fraser {
 
     output:
 
-        path "result_table_fraser.tsv"
+        path "*.tsv"
 
     script: 
         """

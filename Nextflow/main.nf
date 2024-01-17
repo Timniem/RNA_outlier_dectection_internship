@@ -36,6 +36,6 @@ workflow MonoAllelicExpression {
 
 workflow {
     Outrider_gene()
-    //Fraser_ext()
-    //MonoAllelicExpression()
+    Fraser_ext()
+    MonoAllelicExpression()
 }

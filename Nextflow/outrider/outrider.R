@@ -78,4 +78,7 @@ names(res)[names(res) == 'geneID'] <- 'EnsemblID'
 
 res <- res[,c(16,1:15)] # Get Symbol in first position.
 
-write.table(res, res_out_path, sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
+for (sampleid in unique(res$sampleID)){
+    sample_out_path = paste(sampleid, res_out_path, sep='_')
+    write.table(res[res$sampleID == sampleid], sample_out_path, sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
+}

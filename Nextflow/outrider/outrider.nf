@@ -42,8 +42,8 @@ process Outrider {
         path outriderCounts
         path externalCounts
     output:
-        path "outrider_${mode}.rds"
-        path "result_table_${mode}.tsv"
+        path "*.rds"
+        path "*.tsv"
 
     script: 
         """
