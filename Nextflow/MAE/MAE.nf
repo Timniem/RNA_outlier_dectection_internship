@@ -80,7 +80,7 @@ process GetMAEresults {
 
     output:
         
-        path "${sampleid}_result.tsv"
+        path "${sampleid}_result_mae.tsv"
 
     script:
         """
@@ -88,7 +88,7 @@ process GetMAEresults {
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate drop_env
 
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/MAE/get_MAE_results.R $asecounts "${sampleid}_result.tsv"
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/MAE/get_MAE_results.R $asecounts "${sampleid}_result_mae.tsv"
         """
 
 }

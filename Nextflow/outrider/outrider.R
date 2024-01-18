@@ -12,6 +12,7 @@ library(dplyr)
 library("AnnotationDbi")
 library("org.Hs.eg.db")
 library("data.table")
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 if(.Platform$OS.type == "unix") {
     register(MulticoreParam(workers=min(20, multicoreWorkers())))
@@ -75,6 +76,30 @@ res$hgncSymbol = mapIds(org.Hs.eg.db,
                     multiVals="first")
 
 names(res)[names(res) == 'geneID'] <- 'EnsemblID'
+
+# Annotate chr start end.
+txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+
+res$chr = mapIds(txdb,
+                    keys=res$entrez, 
+                    column="TXCHROM",
+                    keytype="GENEID",
+                    multiVals="first")
+
+res$start = mapIds(txdb,
+                    keys=res$entrez, 
+                    column="TXSTART",
+                    keytype="GENEID",
+                    multiVals="first")
+
+res$end = mapIds(txdb,
+                    keys=res$entrez, 
+                    column="TXEND",
+                    keytype="GENEID",
+                    multiVals="first")
+
+# remove chr, to match the other results.
+res$chr <- sub('^\\chr', '', res$chr)
 
 res <- res[,c(16,1:15)] # Get Symbol in first position.
 

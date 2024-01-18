@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 """
-Script to convert single patient FRASER result to annotated BED file.
+Script to convert single patient result to annotated BED like file.
 Author: T Niemeijer
 Date: 17-01-2024
 
@@ -13,7 +13,28 @@ arg 2: output bed path
 import sys
 import pandas as pd
 
-def reformat_res(res, pcutoff=0.5):
+def expand_range(res, region_range=10):
+    """
+    add range nucleotides to start and stop. 
+    subtracting one extra from start to convert 1 based to 0 based. 
+    """
+    res.start = res.start - (region_range + 1)
+    res.end = res.end + (region_range)
+    return res
+
+
+def format_res(res, pcutoff=0.5, mode):
+    """
+    Formatting results from either FRASER, OUTRIDER or MAE
+    -------------------------------------
+    input:
+        results file (.tsv)
+        p_cutoff (float)
+        mode (string)
+    output:
+        df with .bed like formatted data. (pd.Dataframe)
+    """
+    res = res.dropna() # drop NA's for now only support for known Entrez genes.
     res = res[res.padjust < pcutoff] 
     chrdict = {"1":1, "2":2, "3":3, "4":4, "5":5, "6":6, "7":7, "8":8,
             "9":9, "10":10, "11":11, "12":12, "13":13, "14":14,
@@ -22,22 +43,36 @@ def reformat_res(res, pcutoff=0.5):
     res["chrindex"] = [chrdict[x] for x in res.seqnames]
     res = res.sort_values(["chrindex","start"])
     res = res.reset_index().drop(columns=["index","chrindex"])
-    res = res[["seqnames","start", "end","hgncSymbol"]]
+    match mode:
+        case "FRASER":
+            res = res[["chr","start","end","padjust", "deltaPsi"]]
+            res = expand_range(res, 10)
+        case "OUTRIDER":
+            res = res[["chr","start", "end", "padjust", "zScore"]]
+        case "MAE":
+            res = res[["chr","start", "end", "padj", "log2FC"]]
     return res
 
-def expand_range(res, region_range=10):
-    # add range nucleotides to start and stop. 
-    # subtracting one extra from start to convert 1 based to 0 based. 
-    res.start = res.start - (region_range + 1)
-    res.end = res.end + (region_range)
-    return res
+
+def check_res_type(res):
+    """
+    Checks presence of type specific columns in dataframe.
+    Will return the expected data type.
+    """
+    columns = res.columns
+    if "deltaPsi" in columns:
+        return "FRASER"
+    elif "zScore" in columns:
+        return "OUTRIDER"
+    else: 
+        return "MAE"
 
 def main():
     args = sys.argv
-    fraser_results = pd.read_csv(args[1], sep='\t')
-    fraser_results = reformat_res(fraser_results)
-    fraser_results = expand_range(fraser_results)
-    fraser_results.to_csv(path_or_buf=args[2], header=False, sep="\t", index=False)
+    results = pd.read_csv(args[1], sep='\t')
+    results = format_res(results)
+    results = expand_range(results)
+    results.to_csv(path_or_buf=args[2], header=False, sep="\t", index=False)
 
 if __name__ == "__main__":
     main()

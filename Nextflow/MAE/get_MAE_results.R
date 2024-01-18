@@ -31,4 +31,10 @@ print("Running DESeq...")
 # Function from tMAE pkg
 rmae <- DESeq4MAE(mae_counts) ## negative binomial test for allelic counts
 
+# add start-end to the df, change names for compatibility
+# for later one base (for .bed), subtracted 1 from the variant position.
+rmae$start <- rmae$location - 1
+names(res)[names(res) == 'location'] <- 'end'
+names(res)[names(res) == 'contig'] <- 'chr'
+
 write.table(rmae, args[2], sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
