@@ -1,15 +1,67 @@
 #!/bin/bash
 
+POSITIONAL_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -b|--bed)
+            BED="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -v|--vcf)
+            VCF="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -o|--output)
+            OUTPUT="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -h|--header)
+            HEADER="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -t|--type)
+            TYPE="$2"
+            shift # past argument
+            shift # past value
+            ;;
+        -*|--*)
+            echo "Unknown option $1"
+            exit 1
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1") # save positional arg
+            shift # past argument
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
+
+echo "Bed= ${BED}"
+echo "Vcf= ${VCF}"
+echo "Header= ${HEADER}"
+echo "Output= ${OUTPUT}"
+echo "Type= ${TYPE}"
+
 ml BCFtools
 ml BEDTools
 
-in_bed=test.bed
-input_vcf=/groups/umcg-gdio/tmp01/umcg-tniemeijer/samples/dna/PID/pid7.vcf.gz
-header_file=/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/annotate_vcfs_rna_res/resources/FRASER_annots.hdr
-columns_fraser="CHROM,FROM,TO,INFO/FRASER_SPLICE_ABERRANT_PVAL,FRASER_SPLICE_ABERRANT_DELTAPSI"
-columns_outrider="CHROM,FROM,TO,INFO/OUTRIDER_EXPRESSION_ABERRANT_PVAL,OUTRIDER_EXPRESSION_ABERRANT_ZSCORE"
-columns_MAE="CHROM,FROM,TO,INFO/FRASER_SPLICE_ABERRANT_PVAL,FRASER_SPLICE_ABERRANT_DELTAPSI"
+case $TYPE in
+    fraser|FRASER)
+        columns="CHROM,FROM,TO,INFO/FRASER_SPLICE_ABERRANT_PVAL,FRASER_SPLICE_ABERRANT_DELTAPSI"
+        ;;
+    outrider|OUTRIDER)
+        columns="CHROM,FROM,TO,INFO/OUTRIDER_EXPRESSION_ABERRANT_PVAL,OUTRIDER_EXPRESSION_ABERRANT_ZSCORE"
+        ;;
+    mae|MAE)
+        columns="CHROM,FROM,TO,INFO/FRASER_SPLICE_ABERRANT_PVAL,FRASER_SPLICE_ABERRANT_DELTAPSI"
+esac
 
-bedtools sort -i $in_bed > sorted_aberrant_locations.bed
-bcftools sort $input_vcf -o sorted_input.vcf
-bcftools annotate -a sorted_aberrant_locations.bed -h $header_file -c $columns_fraser sorted_input.vcf -o annotated_output.vcf
+bedtools sort -i $BED > sorted_aberrant_locations.bed
+bcftools sort $VCF -o sorted_input.vcf
+bcftools annotate -a sorted_aberrant_locations.bed -h $HEADER -c $columns sorted_input.vcf -o $OUTPUT
