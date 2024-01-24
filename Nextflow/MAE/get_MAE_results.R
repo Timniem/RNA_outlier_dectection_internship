@@ -37,5 +37,6 @@ res$start <- res$position - 1
 
 names(res)[names(res) == 'position'] <- 'end'
 names(res)[names(res) == 'contig'] <- 'chr'
+names(res)[names(res) == 'padj'] <- 'padjust'
 
 write.table(res, args[2], sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
