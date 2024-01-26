@@ -9,6 +9,7 @@
 
 library(OUTRIDER)
 library(dplyr)
+library(tidyr)
 library("AnnotationDbi")
 library("org.Hs.eg.db")
 library("data.table")
@@ -75,25 +76,31 @@ res$hgncSymbol = mapIds(org.Hs.eg.db,
                     keytype="ENSEMBL",
                     multiVals="first")
 
+res$entrezid = mapIds(org.Hs.eg.db,
+                    keys=Ensembl_stripped, 
+                    column="ENTREZID",
+                    keytype="ENSEMBL",
+                    multiVals="first")
+
 names(res)[names(res) == 'geneID'] <- 'EnsemblID'
 
 # Annotate chr start end.
 txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
 
 res$chr = mapIds(txdb,
-                    keys=res$entrez, 
+                    keys=res$entrezid, 
                     column="TXCHROM",
                     keytype="GENEID",
                     multiVals="first")
 
 res$start = mapIds(txdb,
-                    keys=res$entrez, 
+                    keys=res$entrezid, 
                     column="TXSTART",
                     keytype="GENEID",
                     multiVals="first")
 
 res$end = mapIds(txdb,
-                    keys=res$entrez, 
+                    keys=res$entrezid, 
                     column="TXEND",
                     keytype="GENEID",
                     multiVals="first")
@@ -101,7 +108,9 @@ res$end = mapIds(txdb,
 # remove chr, to match the other results.
 res$chr <- sub('^\\chr', '', res$chr)
 
-res <- res[,c(16,1:15)] # Get Symbol in first position.
+# For now, drop all NA's
+res <- drop_na(res)
+res <- apply(res,2,as.character)
 
 for (sampleid in unique(res$sampleID)){
     sample_out_path = paste(sampleid, res_out_path, sep='_')

@@ -10,6 +10,7 @@ params.fraser_hdr="/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectectio
 params.mae_hdr="/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/annotate_vcfs_rna_res/resources/MAE_annots.hdr"
 params.outrider_hdr="/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/annotate_vcfs_rna_res/resources/OUTRIDER_annots.hdr"
 params.vcf="/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/annotate_vcfs_rna_res/sorted_input.vcf"
+params.output="/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/annotate_vcfs_rna_res/test_output"
 
 process ResultsToBED {
     time '30m'
@@ -36,6 +37,8 @@ process AddAnnotationToVCF {
     memory '4 GB'
     cpus 1
 
+    publishDir "$params.output/vcf", mode: 'copy'
+
     input:
         path resultsbed
         path vcf
@@ -43,7 +46,8 @@ process AddAnnotationToVCF {
         val type
 
     output:
-        path "*.vcf"
+        path "annotated_vcf.vcf"
+        
 
     script:
     """
@@ -80,6 +84,8 @@ workflow MaeVCF {
     emit:
         AddAnnotationToVCF.out
 }
+
+
 
 workflow {
     FraserVCF(params.vcf)
