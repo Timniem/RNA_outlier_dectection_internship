@@ -1,0 +1,6 @@
+site_name: RNA Outlier pipeline and dashboard
+nav:
+  - Home: index.md
+  - Pipeline: pipeline.md
+  - Dashboard: dashboard.md
+theme: readthedocs

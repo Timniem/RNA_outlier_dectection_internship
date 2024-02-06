@@ -12,14 +12,14 @@ class Widgets:
         self.plot_functions = PlotFunctions
         self.select_patient = pn.widgets.Select(name='Select Patient',options=self.patients, width=200)
         self.genepanel_filter = pn.widgets.Select(name='Select Genepanel', options=genepanels, width=200)
-        self.pval_slider_fraser = pn.widgets.FloatSlider(name='pValue cut off', value=0.05, start=0.00, end=0.99, step=0.01)
-        self.pval_slider_outrider = pn.widgets.FloatSlider(name='pValue cut off', value=0.05, start=0.00, end=0.99, step=0.01)
-        self.delta_psi_slider = pn.widgets.FloatSlider(name='deltaPsi cut off', value=0.1, start=0, end=1, step=0.05)
-        self.zscore_slider = pn.widgets.FloatSlider(name='zScore cut off', value=2.0, start=0, end=8, step=0.25)
-        self.pval_slider_mae = pn.widgets.FloatSlider(name="pValue cut off", value=0.05, start=0.00, end=0.99, step=0.01)
-        self.log2fc_slider_mae = pn.widgets.FloatSlider(name="log2FC cut off", value=10, start=0, end=20, step=1)
-        self.gene_input = pn.widgets.TextInput(name='Search gene(s)', placeholder='e.g. PLCG2, IL12R, ..')
-        self.hpo_input = pn.widgets.TextInput(name='Search HPO', placeholder='e.g. HP:0000001, HP:0000002, ..')
+        self.pval_slider_fraser = pn.widgets.FloatSlider(name='pValue cut off', value=0.05, start=0.00, end=0.99, step=0.01, width=200)
+        self.pval_slider_outrider = pn.widgets.FloatSlider(name='pValue cut off', value=0.05, start=0.00, end=0.99, step=0.01, width=200)
+        self.delta_psi_slider = pn.widgets.FloatSlider(name='deltaPsi cut off', value=0.1, start=0, end=1, step=0.05, width=200)
+        self.zscore_slider = pn.widgets.FloatSlider(name='zScore cut off', value=2.0, start=0, end=8, step=0.25, width=200)
+        self.pval_slider_mae = pn.widgets.FloatSlider(name="pValue cut off", value=0.05, start=0.00, end=0.99, step=0.01, width=200)
+        self.log2fc_slider_mae = pn.widgets.FloatSlider(name="log2FC cut off", value=10, start=0, end=20, step=1, width=200)
+        self.gene_input = pn.widgets.TextInput(name='Search gene(s)', placeholder='e.g. PLCG2, IL12R, ..', width=200)
+        self.hpo_input = pn.widgets.TextInput(name='Search HPO', placeholder='e.g. HP:0000001, HP:0000002, ..', width=200)
 
         self.fraser_tab = pn.Column(pn.bind(self.fraser_tabulator, patient=self.select_patient, p_cutoff = self.pval_slider_fraser.param.value_throttled,
                                      gene_panel=self.genepanel_filter, psi_cutoff=self.delta_psi_slider.param.value_throttled,
@@ -88,7 +88,7 @@ class Widgets:
                             ["sampleID", "strand"]
                         ),
             selection=[0],
-            width=950,height=505, show_index=False, disabled=True,
+            width=1100,height=505, show_index=False, disabled=True,
             page_size=15,layout='fit_data')
         return tab
     
@@ -115,7 +115,7 @@ class Widgets:
                             ["sampleID"]
                         ),
             selection=[0],
-            width=950,height=505, show_index=False, disabled=True,
+            width=1100,height=505, show_index=False, disabled=True,
             page_size=15,layout='fit_data')
         return tab
 
@@ -141,7 +141,7 @@ class Widgets:
                             ["sampleID"]
                         ),
             selection=[0],
-            width=950,height=505, show_index=False, disabled=True,
+            width=1100,height=505, show_index=False, disabled=True,
             page_size=15,layout='fit_data')
         return tab
     

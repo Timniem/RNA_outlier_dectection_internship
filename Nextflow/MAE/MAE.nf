@@ -29,8 +29,8 @@ process MAEreadCounting {
 
     #Load modules
     module load "GATK/4.2.4.1-Java-8-LTS"
-    module load SAMtools
-    module load BCFtools
+    module load SAMtools/1.9-GCCcore-7.3.0
+    module load BCFtools/1.9-GCCcore-7.3.0
     module list
 
     

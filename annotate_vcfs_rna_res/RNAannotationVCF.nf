@@ -13,7 +13,7 @@ params.vcf="/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_inter
 params.output="/groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/annotate_vcfs_rna_res/test_output"
 
 process ResultsToBED {
-    time '30m'
+    time '10m'
     memory '4 GB'
     cpus 1
 
@@ -33,7 +33,7 @@ process ResultsToBED {
 }
 
 process AddAnnotationToVCF {
-    time '1h'
+    time '10m'
     memory '4 GB'
     cpus 1
 

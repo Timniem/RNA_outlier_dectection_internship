@@ -67,13 +67,15 @@ def format_res(res, pcutoff=0.5):
             res = res[["chr","start", "end", "padjust", "zScore"]]
         case "MAE":
             res = res[["chr","start", "end", "padjust", "log2FC"]]
-    return res, mode
+    return res
 
 def main():
     args = sys.argv
     results = pd.read_csv(args[1], sep="\t")
     results, mode = format_res(results)
-    results.to_csv(path_or_buf=f"{mode}_results.bed", header=False, sep="\t", index=False)
+    #reformat to USCS
+    results.chr = [f'chr{ichr}' for ichr in results.chr]
+    results.to_csv(path_or_buf=args[2], header=False, sep="\t", index=False)
 
 if __name__ == "__main__":
     main()

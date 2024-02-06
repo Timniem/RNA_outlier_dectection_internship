@@ -108,9 +108,9 @@ res$end = mapIds(txdb,
 # remove chr, to match the other results.
 res$chr <- sub('^\\chr', '', res$chr)
 
-# For now, drop all NA's
-res <- drop_na(res)
-res <- apply(res,2,as.character)
+# For now, drop all NA's. No this is left for the other script.
+#res <- drop_na(res)
+#res <- apply(res,2,as.character)
 
 for (sampleid in unique(res$sampleID)){
     sample_out_path = paste(sampleid, res_out_path, sep='_')
