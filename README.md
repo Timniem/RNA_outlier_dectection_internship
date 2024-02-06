@@ -15,6 +15,6 @@ External counts are/can be added to improve gene/splice outlier significance.
 The Dashboard accompanies the Nextflow pipeline and provides researchers with a tool for quick analysis of the outlier results based on gene panels/ specific genes and/or HPO terms.
 It is written mainly in Panel (Holoviz), and can be accessed by serving the Panel/Bokeh server locally or remotely.
 
-'* https://github.com/gagneurlab/drop | https://github.com/gagneurlab/OUTRIDER | https://github.com/gagneurlab/FRASER | MAE deseq2
+'* https://github.com/gagneurlab/drop  https://www.nature.com/articles/s41596-020-00462-5 | https://github.com/gagneurlab/OUTRIDER https://www.cell.com/ajhg/fulltext/S0002-9297(18)30401-4 | https://github.com/gagneurlab/FRASER https://www.nature.com/articles/s41467-020-20573-7 | MAE deseq2 https://www.nature.com/articles/ncomms15824 https://genomebiology.biomedcentral.com/articles/10.1186/s13059-014-0550-8
 
 ** https://github.com/molgenis/vip
