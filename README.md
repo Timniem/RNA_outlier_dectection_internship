@@ -1,5 +1,8 @@
 # RNA_outlier_dectection_internship
 
+For more info and instructions vitit https://timniem.github.io/RNA_outlier_dectection_internship/(https://timniem.github.io/RNA_outlier_dectection_internship/)
+
+
 ## Nextflow RNA-seq pipeline
 This pipeline written in Nextflow will yield outlier results for gene expression and splicing. It consists of several modules of the DROP pipeline* the OUTRIDER, FRASER and Mono-allelic-expression modules (gagneur-lab) and is made to be compatible for VIP** integration in the near future.
 
