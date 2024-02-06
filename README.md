@@ -12,9 +12,6 @@ External counts are/can be added to improve gene/splice outlier significance.
 The Dashboard accompanies the Nextflow pipeline and provides researchers with a tool for quick analysis of the outlier results based on gene panels/ specific genes and/or HPO terms.
 It is written mainly in Panel (Holoviz), and can be accessed by serving the Panel/Bokeh server locally or remotely.
 
-![plot](https://github.com/Timniem/RNA_outlier_dectection_internship/blob/main/RNA-seq%20outlier%20analysis.PNG)
-
-
 '* https://github.com/gagneurlab/drop | https://github.com/gagneurlab/OUTRIDER | https://github.com/gagneurlab/FRASER | MAE deseq2
 
 ** https://github.com/molgenis/vip
