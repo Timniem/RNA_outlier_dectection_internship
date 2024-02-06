@@ -1,6 +1,6 @@
 # RNA_outlier_dectection_internship
 
-For more info and instructions vitit [https://timniem.github.io/RNA_outlier_dectection_internship/](https://timniem.github.io/RNA_outlier_dectection_internship/)
+For more info and instructions visit [https://timniem.github.io/RNA_outlier_dectection_internship/](https://timniem.github.io/RNA_outlier_dectection_internship/)
 
 
 ## Nextflow RNA-seq pipeline
