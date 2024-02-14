@@ -33,7 +33,7 @@ process OutriderCount {
 process Outrider {
     time '8h'
     memory '100 GB'
-    cpus 20
+    cpus 10
 
     publishDir "$params.output/outrider", mode: 'copy'
 

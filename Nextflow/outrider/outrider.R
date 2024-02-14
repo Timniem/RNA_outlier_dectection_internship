@@ -108,11 +108,11 @@ res$end = mapIds(txdb,
 # remove chr, to match the other results.
 res$chr <- sub('^\\chr', '', res$chr)
 
-# For now, drop all NA's. No this is left for the other script.
-#res <- drop_na(res)
-#res <- apply(res,2,as.character)
+# solve issue unimplemented type 'list' in 'EncodeElement'? https://stackoverflow.com/questions/24829027/unimplemented-type-list-when-trying-to-write-table
+# as dataframe, because it complains about being an atomic vector??
+res <- as.data.frame(apply(res,2,as.character))
 
 for (sampleid in unique(res$sampleID)){
     sample_out_path = paste(sampleid, res_out_path, sep='_')
-    write.table(res[res$sampleID == sampleid], sample_out_path, sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
+    write.table(res[res$sampleID == sampleid,], sample_out_path, sep='\t', append = FALSE, row.names = FALSE, col.names = TRUE)
 }
