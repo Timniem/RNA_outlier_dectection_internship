@@ -1,2 +1,0 @@
-##INFO=<ID=MAE_ABERRANT_PVAL,Number=1,Type=Float,Description="Gagneurlab MAE module mono allelic expression metric">
-##INFO=<ID=MAE_ABERRANT_LOG2FC,Number=1,Type=Float,Description="Gagneurlab MAE module mono allelic expression metric">
