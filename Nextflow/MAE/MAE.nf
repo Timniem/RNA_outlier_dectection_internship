@@ -13,7 +13,7 @@ process MAEreadCounting {
     memory '4 GB'
     cpus 1
 
-    publishDir "$params.output/MAE/ASEreadcounts", mode: 'copy'
+    publishDir "$workDir/MAE/ASEreadcounts", mode: 'copy'
 
     input:
         tuple val(sampleID), path(vcf), path(bamFile)
@@ -72,7 +72,7 @@ process GetMAEresults {
     memory '4 GB'
     cpus 1
 
-    publishDir "$params.output/MAE/DeSEQresults", mode: 'copy'
+    publishDir "$workDir/MAE/DeSEQresults", mode: 'copy'
 
     input:
         val sampleid

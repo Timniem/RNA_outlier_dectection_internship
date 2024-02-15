@@ -6,6 +6,7 @@
 #' Argument 3= output path res
 #' Argument 4= samplesheet
 #' Argument 5= external count path
+#' Argument 6= amount ext. counts
 
 library(OUTRIDER)
 library(dplyr)
@@ -16,9 +17,9 @@ library("data.table")
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 if(.Platform$OS.type == "unix") {
-    register(MulticoreParam(workers=min(20, multicoreWorkers())))
+    register(MulticoreParam(workers=min(2, multicoreWorkers())))
 } else {
-    register(SnowParam(workers=min(20, multicoreWorkers())))
+    register(SnowParam(workers=min(2, multicoreWorkers())))
 }
 
 args <- commandArgs(trailingOnly = TRUE)
@@ -28,23 +29,35 @@ rds_out_path <- args[2]
 res_out_path <- args[3]
 iter <- 15
 
-extctspath <- file.path(args[5],"geneCounts.tsv.gz")
-
 # Add external Counts
-if (length(args) == 5){
+if (length(args) >= 5){
+    # By default add 100 external counts otherwise
+    extctspath <- file.path(args[5],"geneCounts.tsv.gz")
+    if (length(args) >= 6){
+        ext_amount <- as.integer(args[6]) + 1 #+1 to account for the geneID
+    } else {
+        ext_amount <- 101
+    }
     extctsTable <- read.table(gzfile(extctspath), header=TRUE, sep="\t")
-    ctsTable <- merge(x=ctsTable, y=extctsTable, by=c("GeneID"), all=TRUE)
+    extctsTable <- extctsTable[,c(1:ext_amount)]
+    count_data <- merge(x=ctsTable, y=extctsTable, by=c("GeneID"), all=TRUE)
+} else {
+    count_data <- ctsTable
 }
 
-count_data <- ctsTable[,c(1:101)] #max=100
 count_data[is.na(count_data)] <- 0
-
 countDataMatrix <- as.matrix(count_data[ , -1])
 rownames(countDataMatrix) <- count_data[ , 1]
 
 ods <- OutriderDataSet(countData=countDataMatrix)
 ods <- filterExpression(ods, minCounts=TRUE, filterGenes=TRUE)
 ods <- estimateSizeFactors(ods)
+
+# Check if samples need to be excluded from a fit.
+if ("excludeFit" %in% samplesheet) {
+    samples_fit_exclusion <- samplesheet[samplesheet$excludeFit == TRUE]
+    sampleExclusionMask(ods[,samples_fit_exclusion$sampleID]) <- TRUE
+}
 
 a <- 5 
 b <- min(ncol(ods), nrow(ods)) / 3

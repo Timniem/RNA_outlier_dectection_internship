@@ -18,7 +18,7 @@ process FraserCount {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate fraser_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/frasercounts.R ${params.samplesheet} "${params.output}"
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/frasercounts.R ${params.samplesheet} "${workDir}"
         touch "./count.done" 
         """
 }
@@ -43,18 +43,18 @@ process MergeCounts {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate fraser_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/merge_counts.R "${params.output}" ${ext_counts}
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/merge_counts.R "${workDir}" "${ext_counts}" "${params.extcounts.amount_fraser}"
         touch "./merge.done"
         """
 
 }
 
 process Fraser {
-    time '6h'
-    memory '100 GB'
-    cpus 10
+    time '8h'
+    memory '64 GB'
+    cpus 4
 
-    publishDir "$params.output/fraser", mode: 'copy'
+    publishDir "$workDir/fraser", mode: 'copy'
 
     input:
         path merge_check
@@ -68,6 +68,6 @@ process Fraser {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate fraser_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/fraser.R ${params.samplesheet} ${params.output}
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/fraser/fraser.R ${params.samplesheet} ${workDir}
         """
 }

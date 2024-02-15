@@ -12,7 +12,7 @@ process OutriderCount {
     memory '16 GB'
     cpus 10
 
-    publishDir "$params.output/counts", mode: 'copy'
+    publishDir "$workDir/counts", mode: 'copy'
 
     input:
         val mode
@@ -32,10 +32,10 @@ process OutriderCount {
 
 process Outrider {
     time '8h'
-    memory '100 GB'
-    cpus 10
+    memory '32 GB'
+    cpus 4
 
-    publishDir "$params.output/outrider", mode: 'copy'
+    publishDir "$workDir/outrider", mode: 'copy'
 
     input:
         val mode
@@ -50,6 +50,6 @@ process Outrider {
         eval "\$(conda shell.bash hook)"
         source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
         mamba activate outrider_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/outrider/outrider.R "${outriderCounts}" "outrider_${mode}.rds" "result_table_${mode}.tsv" "${params.samplesheet}" "${externalCounts}"
+        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/outrider/outrider.R "${outriderCounts}" "outrider_${mode}.rds" "result_table_${mode}.tsv" "${params.samplesheet}" "${externalCounts}" "${params.extcounts.amount_outrider}"
         """
 }
