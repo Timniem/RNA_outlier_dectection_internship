@@ -23,6 +23,8 @@ workdir <- args[2]
 # Load original sample table
 args <- commandArgs(trailingOnly = TRUE)
 settingsTable <- fread(args[1])
+settingsTable$bamFile <- basename(settingsTable$bamFile)
+
 fds <- FraserDataSet(colData=settingsTable, workingDir=workdir)
 fds <- countRNAData(fds)
 fds <- calculatePSIValues(fds)

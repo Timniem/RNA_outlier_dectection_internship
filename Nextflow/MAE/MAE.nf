@@ -13,7 +13,7 @@ process MAEreadCounting {
     memory '4 GB'
     cpus 1
 
-    publishDir "$workDir/MAE/ASEreadcounts", mode: 'copy'
+    publishDir "$params.output/MAE/ASEreadcounts", mode: 'copy'
 
     input:
         tuple val(sampleID), path(vcf), path(bamFile)
@@ -27,16 +27,8 @@ process MAEreadCounting {
     set -e
     set -u
 
-    #Load modules
-    module load "GATK/4.2.4.1-Java-8-LTS"
-    module load SAMtools/1.9-GCCcore-7.3.0
-    module load BCFtools/1.9-GCCcore-7.3.0
-    module list
-
-    
-
     # From DROP:
-    if samtools view -H ${bamFile} | grep -q "@RG";then
+    if samtools view -H "${bamFile}" | grep -q "@RG";then
     printf "BAM contains read groups (RG), continuing with ASEReadCounter...\n"
     else
     printf "%s\n" "" "ERROR: BAM file doesn't contain Read Group Tag (RG)" \
@@ -63,6 +55,7 @@ process MAEreadCounting {
 
     # sorting the count file.
     (head -n 1 "${sampleID}_temp_counts.tsv" && tail -n +2 "${sampleID}_temp_counts.tsv" | sort -k1,1 -V -s ) > "${sampleID}_maecounts.tsv"
+    
     """
 }
 
@@ -72,7 +65,7 @@ process GetMAEresults {
     memory '4 GB'
     cpus 1
 
-    publishDir "$workDir/MAE/DeSEQresults", mode: 'copy'
+    publishDir "$params.output/MAE/DeSEQresults", mode: 'copy'
 
     input:
         val sampleid
@@ -84,10 +77,6 @@ process GetMAEresults {
 
     script:
         """
-        eval "\$(conda shell.bash hook)"
-        source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
-        mamba activate drop_env
-
         Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/MAE/get_MAE_results.R $asecounts "${sampleid}_result_mae.tsv"
         """
 
