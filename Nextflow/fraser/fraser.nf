@@ -6,23 +6,22 @@ nextflow.enable.dsl=2
 
 
 process FraserCount {
-    time '2h'
-    memory '16 GB'
-    cpus 10
+    time '4h'
+    memory '32 GB'
+    cpus 4
 
     input:
         path frasercountR
         path samplesheet
-        path output
         path bamFiles
         path baiFiles
     output:
-        path "./count.done" 
+        path "fraser_output"
 
     script: 
         """
-        Rscript ${frasercountR} ${samplesheet} "${output}"
-        touch "./count.done" 
+        mkdir "fraser_output"
+        Rscript "${frasercountR}" "${samplesheet}" "fraser_output"
         """
 }
 
@@ -33,21 +32,19 @@ process MergeCounts {
     cpus 4
 
     input:
-        path count_check
         path ext_counts
         path mergescriptR
-        path output
+        path fraser_output
         val ext_amount_fraser
         
 
     output:
 
-        path "./merge.done" 
+        path fraser_output
 
     script: 
         """
-        Rscript ${mergescriptR} "${output}" "${ext_counts}" "${ext_amount_fraser}"
-        touch "./merge.done"
+        Rscript ${mergescriptR} "${fraser_output}" "${ext_counts}" "${ext_amount_fraser}"
         """
 
 }
@@ -60,7 +57,6 @@ process Fraser {
     publishDir "$params.output/fraser", mode: 'copy'
 
     input:
-        path merge_check
         path samplesheet
         path output
         path fraserR
@@ -71,6 +67,6 @@ process Fraser {
 
     script: 
         """
-        Rscript ${fraserR} ${samplesheet} ${output}
+        Rscript "${fraserR}" "${samplesheet}" "${output}"
         """
 }

@@ -11,12 +11,13 @@ nextflow.enable.dsl=2
 process MAEreadCounting {
     time '10h'
     memory '4 GB'
-    cpus 1
+    cpus 2
 
     publishDir "$params.output/MAE/ASEreadcounts", mode: 'copy'
 
     input:
         tuple val(sampleID), path(vcf), path(bamFile)
+        tuple val(fasta), path(fastafolder)
 
     output:
         val "${sampleID}"
@@ -43,7 +44,7 @@ process MAEreadCounting {
     gatk IndexFeatureFile -I "$vcf"
 
     # Only select hetzyg variants and only SNP's
-    gatk SelectVariants -V $vcf -O "${sampleID}_temp.vcf" -R "${params.fasta}" --restrict-alleles-to BIALLELIC -select 'vc.getHetCount()==1' --select-type-to-include SNP
+    gatk SelectVariants -V $vcf -O "${sampleID}_temp.vcf" -R "${fasta}" --restrict-alleles-to BIALLELIC -select 'vc.getHetCount()==1' --select-type-to-include SNP
 
     # remove duplicates
     bcftools norm --rm-dup all "${sampleID}_temp.vcf" > "${sampleID}_temp.vcf.tmp" && mv "${sampleID}_temp.vcf.tmp" "${sampleID}_temp.vcf"
@@ -51,7 +52,7 @@ process MAEreadCounting {
     # create new index
     gatk IndexFeatureFile -I "${sampleID}_temp.vcf"
 
-    gatk ASEReadCounter -I $bamFile -V "${sampleID}_temp.vcf" -O "${sampleID}_temp_counts.tsv" -R "${params.fasta}"
+    gatk ASEReadCounter -I $bamFile -V "${sampleID}_temp.vcf" -O "${sampleID}_temp_counts.tsv" -R "${fasta}"
 
     # sorting the count file.
     (head -n 1 "${sampleID}_temp_counts.tsv" && tail -n +2 "${sampleID}_temp_counts.tsv" | sort -k1,1 -V -s ) > "${sampleID}_maecounts.tsv"

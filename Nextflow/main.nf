@@ -30,24 +30,28 @@ workflow Fraser_nf {
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )
     .map { row -> row.bamFile }
+
     baifiles_ch = bamfiles_ch.map { bamFile -> "${bamFile}.bai" }
-    FraserCount(params.fraser.frasercountsR, params.samplesheet, params.output, bamfiles_ch.collect(), baifiles_ch.collect())
-    MergeCounts(FraserCount.out, params.extcounts.blood, params.fraser.mergescriptR, params.output, params.extcounts.amount_fraser)
-    Fraser(MergeCounts.out, params.samplesheet, params.output, params.fraser.fraserR)
+
+    FraserCount(params.fraser.frasercountsR, params.samplesheet, bamfiles_ch.collect(), baifiles_ch.collect())
+    MergeCounts(params.extcounts.blood, params.fraser.mergescriptR, FraserCount.out, params.extcounts.amount_fraser)
+    Fraser(params.samplesheet, MergeCounts.out, params.fraser.fraserR)
 }
 
 workflow MAE_nf {
-    Channel
+    readcount_ch = Channel
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )
     .map { row -> tuple( row.sampleID, row.vcf, row.bamFile ) }
     .filter { it[1] != null }
-    .filter { it[1] != "NA" } | MAEreadCounting
+    .filter { it[1] != "NA" }
+
+    MAEreadCounting(readcount_ch, tuple(params.fasta, params.fastafolder))
     GetMAEresults(MAEreadCounting.out)
 }
 
 workflow {
-    //Outrider_nf()
+    Outrider_nf()
     Fraser_nf()
-    //MAE_nf()
+    MAE_nf()
 }

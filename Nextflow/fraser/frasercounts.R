@@ -13,9 +13,9 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Setup parallelisation
 if(.Platform$OS.type == "unix") {
-    register(MulticoreParam(workers=min(10, multicoreWorkers())))
+    register(MulticoreParam(workers=min(4, multicoreWorkers())))
 } else {
-    register(SnowParam(workers=min(10, multicoreWorkers())))
+    register(SnowParam(workers=min(4, multicoreWorkers())))
 }
 
 workdir <- args[2]
