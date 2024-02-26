@@ -47,7 +47,7 @@ workflow MAE_nf {
     .filter { it[1] != "NA" }
 
     MAEreadCounting(readcount_ch, tuple(params.fasta, params.fastafolder))
-    GetMAEresults(MAEreadCounting.out)
+    GetMAEresults(MAEreadCounting.out, params.mae.resultsR)
 }
 
 workflow {

@@ -10,8 +10,8 @@ nextflow.enable.dsl=2
 
 process MAEreadCounting {
     time '10h'
-    memory '4 GB'
-    cpus 2
+    memory '8 GB'
+    cpus 1
 
     publishDir "$params.output/MAE/ASEreadcounts", mode: 'copy'
 
@@ -71,6 +71,7 @@ process GetMAEresults {
     input:
         val sampleid
         path asecounts
+        path resultsR
 
     output:
         
@@ -78,7 +79,7 @@ process GetMAEresults {
 
     script:
         """
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/MAE/get_MAE_results.R $asecounts "${sampleid}_result_mae.tsv"
+        Rscript "${resultsR}" "${asecounts}" "${sampleid}_result_mae.tsv"
         """
 
 }
