@@ -34,7 +34,7 @@ if (length(args) >= 5){
     # By default add 100 external counts otherwise
     extctspath <- file.path(args[5],"geneCounts.tsv.gz")
     if (length(args) >= 6){
-        ext_amount <- as.integer(args[6]) + 1 #+1 to account for the geneID
+        ext_amount <- as.numeric(args[6]) + 1 #+1 to account for the geneID
     } else {
         ext_amount <- 101
     }
