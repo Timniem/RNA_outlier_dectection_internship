@@ -43,7 +43,7 @@ process MergeOutridercounts {
 }
 
 process Outrider {
-    time '8h'
+    time '10h'
     memory '32 GB'
     cpus 4
 

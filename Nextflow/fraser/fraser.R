@@ -8,8 +8,7 @@
 
 library(FRASER)
 library(dplyr)
-library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-library(org.Hs.eg.db)
+
 
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -37,17 +36,20 @@ best_q <- bestQ(fds, type="jaccard")
 fds <- FRASER(fds, q=c(jaccard=best_q))
 
 # Using different method of annotation
-txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-orgDb <- org.Hs.eg.db
-fds <- annotateRangesWithTxDb(fds, txdb=txdb, orgDb=orgDb)
+#library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+#library(org.Hs.eg.db)
+#txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+#orgDb <- org.Hs.eg.db
+#fds <- annotateRangesWithTxDb(fds, txdb=txdb, orgDb=orgDb)
 
-#fds <- annotateRanges(fds) previous method
-fds <- calculatePadjValues(fds, type="jaccard", geneLevel=TRUE)
+fds <- annotateRanges(fds) # previous method
+
+fds <- calculatePadjValues(fds, type="jaccard", geneLevel=TRUE) # geneLevel TRUE -> FALSE
+
+saveFraserDataSet(fds, dir=workdir, name="fraser_out")
 
 register(SerialParam())
 res <- as.data.table(results(fds,aggregate=TRUE, all=TRUE))
-
-saveFraserDataSet(fds, dir=workdir, name="fraser_out")
 
 res <- res[res$sampleID %in% original_settingsTable$sampleID]
 
