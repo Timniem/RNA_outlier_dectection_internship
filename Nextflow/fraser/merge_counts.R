@@ -15,14 +15,14 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Setup parallelisation
 if(.Platform$OS.type == "unix") {
-    register(MulticoreParam(workers=min(10, multicoreWorkers())))
+    register(MulticoreParam(workers=min(4, multicoreWorkers())))
 } else {
-    register(SnowParam(workers=min(10, multicoreWorkers())))
+    register(SnowParam(workers=min(4, multicoreWorkers())))
 }
 
 fds <- loadFraserDataSet(dir=args[1])
 ext_dir <- args[2]
-ext_amount <- as.integer(args[4]) + 1 #+1 to account for the geneID
+ext_amount <- as.numeric(args[3]) + 1 #+1 to account for the geneID
 
 countfiles <- c(k_j=file.path(ext_dir,"k_j_counts.tsv.gz"), k_theta=file.path(ext_dir,"k_theta_counts.tsv.gz"),
                 n_psi3=file.path(ext_dir,"n_psi3_counts.tsv.gz"), n_psi5=file.path(ext_dir,"n_psi5_counts.tsv.gz"),

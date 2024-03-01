@@ -13,9 +13,9 @@ args <- commandArgs(trailingOnly = TRUE)
 
 # Setup parallelisation
 if(.Platform$OS.type == "unix") {
-    register(MulticoreParam(workers=min(10, multicoreWorkers())))
+    register(MulticoreParam(workers=min(4, multicoreWorkers())))
 } else {
-    register(SnowParam(workers=min(10, multicoreWorkers())))
+    register(SnowParam(workers=min(4, multicoreWorkers())))
 }
 
 workdir <- args[2]
@@ -23,6 +23,8 @@ workdir <- args[2]
 # Load original sample table
 args <- commandArgs(trailingOnly = TRUE)
 settingsTable <- fread(args[1])
+settingsTable$bamFile <- basename(settingsTable$bamFile)
+
 fds <- FraserDataSet(colData=settingsTable, workingDir=workdir)
 fds <- countRNAData(fds)
 fds <- calculatePSIValues(fds)

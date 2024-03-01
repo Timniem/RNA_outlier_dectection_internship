@@ -8,37 +8,48 @@ Results will be stored in a outrider dataset (*.rds) and a resultsfile (*.tsv)
 nextflow.enable.dsl=2
 
 process OutriderCount {
-    time '1h'
-    memory '16 GB'
-    cpus 10
+    time '30m'
+    memory '4 GB'
+    cpus 4
 
-    publishDir "$workDir/counts", mode: 'copy'
+    publishDir "$params.output/counts", mode: 'copy'
 
     input:
-        val mode
-        val gtf
+        tuple val(sampleID), path(bamFile), val(pairedEnd), val(strandSpecific)
     output:
-        path "outrider_counts_${mode}.txt"
-        path "outrider_count_summary.tsv"
+        path "${sampleID}_outrider_counts.tsv"
     script:
         """
-        echo "${gtf}"
-        eval "\$(conda shell.bash hook)"
-        source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
-        mamba activate outrider_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/outrider/featurecounts.R ${params.samplesheet} ${gtf} "outrider_counts_${mode}.txt"
+        Rscript ${params.outrider.outridercountsR} ${sampleID} ${bamFile} ${params.featurecounts.genes_gtf} ${pairedEnd} ${strandSpecific}
+        """
+}
+
+process MergeOutridercounts {
+    time '1h'
+    memory '16 GB'
+    cpus 1
+    
+    publishDir "$params.output/counts", mode: 'copy'
+
+    input:
+        path inputFiles
+        path mergescript
+    output:
+        path "merged_outrider_counts.txt"
+    script:
+        """
+        Rscript ${mergescript} ${inputFiles}
         """
 }
 
 process Outrider {
-    time '8h'
+    time '10h'
     memory '32 GB'
     cpus 4
 
-    publishDir "$workDir/outrider", mode: 'copy'
+    publishDir "$params.output/outrider", mode: 'copy'
 
     input:
-        val mode
         path outriderCounts
         path externalCounts
     output:
@@ -47,9 +58,6 @@ process Outrider {
 
     script: 
         """
-        eval "\$(conda shell.bash hook)"
-        source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
-        mamba activate outrider_env
-        Rscript /groups/umcg-gdio/tmp01/umcg-tniemeijer/RNA_outlier_dectection_internship/Nextflow/outrider/outrider.R "${outriderCounts}" "outrider_${mode}.rds" "result_table_${mode}.tsv" "${params.samplesheet}" "${externalCounts}" "${params.extcounts.amount_outrider}"
+        Rscript ${params.outrider.outriderR} "${outriderCounts}" "outrider.rds" "result_table.tsv" "${params.samplesheet}" "${externalCounts}" "${params.extcounts.amount_outrider}"
         """
 }

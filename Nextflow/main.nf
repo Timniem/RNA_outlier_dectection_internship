@@ -4,38 +4,54 @@ author: T Niemeijer
 **/
 nextflow.enable.dsl=2
 
-include { Outrider; OutriderCount } from "./outrider/outrider"
+include { Outrider; OutriderCount; MergeOutridercounts } from "./outrider/outrider"
 include { Fraser; MergeCounts; FraserCount } from "./fraser/fraser"
 include { MAEreadCounting; GetMAEresults } from "./MAE/MAE"
 
-workflow Outrider_gene {
-    OutriderCount('gene', params.featurecounts.genes_gtf)
-    Outrider('gene',OutriderCount.out[0], params.extcounts.blood)
-}
-
-workflow Fraser_noext {
-    FraserCount()
-    Fraser(FraserCounts.out)
-}
-
-workflow Fraser_ext {
-    FraserCount()
-    MergeCounts(FraserCount.out, params.extcounts.blood)
-    Fraser(MergeCounts.out)
-}
-
-workflow MonoAllelicExpression {
+workflow Outrider_nf {
+    /* Gagneurlab Outrider Nextflow implementation */
     Channel
+    .fromPath( params.samplesheet )
+    .splitCsv( header: true, sep: '\t' )
+    .map { row -> tuple( row.sampleID, row.bamFile, row.pairedEnd, row.strandSpecific ) }
+    | OutriderCount
+    | collect
+    | set { merge_ch }
+
+    MergeOutridercounts(merge_ch, params.outrider.mergecountsR)
+    Outrider(MergeOutridercounts.out, params.extcounts.blood)
+}
+
+workflow Fraser_nf {
+    /* Gagneurlab Fraser Nextflow implementation
+    Since it was a bit tricky to implement this parallized like Outrider
+    It makes sure that symbolic links to the *bam/bai files are included*/
+    bamfiles_ch = Channel
+    .fromPath( params.samplesheet )
+    .splitCsv( header: true, sep: '\t' )
+    .map { row -> row.bamFile }
+
+    baifiles_ch = bamfiles_ch.map { bamFile -> "${bamFile}.bai" }
+
+    FraserCount(params.fraser.frasercountsR, params.samplesheet, bamfiles_ch.collect(), baifiles_ch.collect())
+    MergeCounts(params.extcounts.blood, params.fraser.mergescriptR, FraserCount.out, params.extcounts.amount_fraser)
+    Fraser(params.samplesheet, MergeCounts.out, params.fraser.fraserR)
+}
+
+workflow MAE_nf {
+    readcount_ch = Channel
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )
     .map { row -> tuple( row.sampleID, row.vcf, row.bamFile ) }
     .filter { it[1] != null }
-    .filter { it[1] != "NA" } | MAEreadCounting
-    GetMAEresults(MAEreadCounting.out)
+    .filter { it[1] != "NA" }
+
+    MAEreadCounting(readcount_ch, tuple(params.fasta, params.fastafolder))
+    GetMAEresults(MAEreadCounting.out, params.mae.resultsR)
 }
 
 workflow {
-    Outrider_gene()
-    Fraser_ext()
-    MonoAllelicExpression()
+    Outrider_nf()
+    Fraser_nf()
+    MAE_nf()
 }

@@ -9,13 +9,14 @@
 library(FRASER)
 library(dplyr)
 
+
 args <- commandArgs(trailingOnly = TRUE)
 
 # Setup parallelisation
 if(.Platform$OS.type == "unix") {
-    register(MulticoreParam(workers=min(10, multicoreWorkers())))
+    register(MulticoreParam(workers=min(4, multicoreWorkers())))
 } else {
-    register(SnowParam(workers=min(10, multicoreWorkers())))
+    register(SnowParam(workers=min(4, multicoreWorkers())))
 }
 
 workdir <- args[2]
@@ -33,13 +34,22 @@ set.seed(42)
 fds <- optimHyperParams(fds, type="jaccard", plot=FALSE)
 best_q <- bestQ(fds, type="jaccard")
 fds <- FRASER(fds, q=c(jaccard=best_q))
-fds <- annotateRanges(fds)
-fds <- calculatePadjValues(fds, type="jaccard", geneLevel=TRUE)
+
+# Using different method of annotation
+#library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+#library(org.Hs.eg.db)
+#txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+#orgDb <- org.Hs.eg.db
+#fds <- annotateRangesWithTxDb(fds, txdb=txdb, orgDb=orgDb)
+
+fds <- annotateRanges(fds) # previous method
+
+fds <- calculatePadjValues(fds, type="jaccard", geneLevel=TRUE) # geneLevel TRUE -> FALSE
+
+saveFraserDataSet(fds, dir=workdir, name="fraser_out")
 
 register(SerialParam())
 res <- as.data.table(results(fds,aggregate=TRUE, all=TRUE))
-
-saveFraserDataSet(fds, dir=workdir, name="fraser_out")
 
 res <- res[res$sampleID %in% original_settingsTable$sampleID]
 
