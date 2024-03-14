@@ -9,7 +9,7 @@ nextflow.enable.dsl=2
 
 process OutriderCount {
     time '30m'
-    memory '4 GB'
+    memory '8 GB'
     cpus 4
 
     publishDir "$params.output/counts", mode: 'copy'
@@ -44,7 +44,7 @@ process MergeOutridercounts {
 
 process Outrider {
     time '10h'
-    memory '32 GB'
+    memory '64 GB'
     cpus 4
 
     publishDir "$params.output/outrider", mode: 'copy'

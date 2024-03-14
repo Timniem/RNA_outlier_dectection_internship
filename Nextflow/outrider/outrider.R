@@ -17,9 +17,9 @@ library("data.table")
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 if(.Platform$OS.type == "unix") {
-    register(MulticoreParam(workers=min(2, multicoreWorkers())))
+    register(MulticoreParam(workers=min(4, multicoreWorkers())))
 } else {
-    register(SnowParam(workers=min(2, multicoreWorkers())))
+    register(SnowParam(workers=min(4, multicoreWorkers())))
 }
 
 args <- commandArgs(trailingOnly = TRUE)

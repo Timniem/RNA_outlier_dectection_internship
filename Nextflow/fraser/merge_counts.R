@@ -13,13 +13,6 @@ library(dplyr)
 
 args <- commandArgs(trailingOnly = TRUE)
 
-# Setup parallelisation
-if(.Platform$OS.type == "unix") {
-    register(MulticoreParam(workers=min(4, multicoreWorkers())))
-} else {
-    register(SnowParam(workers=min(4, multicoreWorkers())))
-}
-
 fds <- loadFraserDataSet(dir=args[1])
 ext_dir <- args[2]
 ext_amount <- as.numeric(args[3]) + 1 #+1 to account for the geneID

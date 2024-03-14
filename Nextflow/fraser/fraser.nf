@@ -28,8 +28,8 @@ process FraserCount {
 
 process MergeCounts {
     time '1h'
-    memory '8 GB'
-    cpus 4
+    memory '32 GB'
+    cpus 1
 
     input:
         path ext_counts
