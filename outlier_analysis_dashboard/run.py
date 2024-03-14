@@ -8,7 +8,11 @@ import sys
 def main():
     fraser_data = pd.read_csv(sys.argv[1], sep='\t')
     outrider_data = pd.read_csv(sys.argv[2], sep='\t')
-    mae_data = pd.read_csv(sys.argv[3], sep='\t')
+    try:
+        mae_data = pd.read_csv(sys.argv[3], sep='\t')
+    except FileNotFound:
+        #creation of dummy data
+        mae_data = pd.DataFrame({"sampleID":[],"hgncSymbol", "padj":[], "log2FC":[] })
     dashboard = Dashboard(fraser_data, outrider_data, mae_data).run()
     dashboard.servable()
 main()
