@@ -46,7 +46,7 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="./">Pipeline</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#quick-start">Quick start</a>
+    <li class="toctree-l2"><a class="reference internal" href="#install-guide">install guide</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#using-the-pipeline">Using the pipeline</a>
     </li>
@@ -81,18 +81,59 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="nextflow-pipeline">Nextflow pipeline</h1>
-<h2 id="quick-start">Quick start</h2>
+<p>prerequisites:
+- Nextflow (21.10.6 or higher) 
+- Singularity(or Apptainer) </p>
+<h2 id="install-guide">install guide</h2>
 <p>clone the repository</p>
 <pre><code>git clone https://github.com/Timniem/RNA_outlier_dectection_internship/
 </code></pre>
-<p>change directory to the cloned repository:</p>
-<pre><code>cd RNA_outlier_dectection_internship
+<p>Get the singularity container using Singularity:</p>
+<pre><code>singularity pull --arch amd64 library://timniem/rna_outliers/test:sha256.8fe6ae8f47810ee49d5bc6c45ace48daec0f76e4a216faa199b9f7aeb9ace1e2
 </code></pre>
-<p>run the install script:</p>
-<pre><code>bash install.sh
+<p>or alternatively using Apptainer:</p>
+<pre><code># Add the Sylabscloud to the remotes on Apptainer
+apptainer remote add --no-login SylabsCloud cloud.sylabs.io
+
+# if not already configured
+export APPTAINER_CACHEDIR=/path/to/tmp
+
+apptainer pull --dir 'path/to/cache/dir' container_name.sif library://timniem/rna_outliers/test:sha256.8fe6ae8f47810ee49d5bc6c45ace48daec0f76e4a216faa199b9f7aeb9ace1e2
+</code></pre>
+<p>Add the singularity container to the nextflow config:</p>
+<pre><code>singularity {
+    enabled = true
+    cacheDir = &quot;/path/to/cache/&quot;
+    autoMounts = true
+}
+process {
+    executor=&quot;slurm&quot; # if slurm is used.
+    container=&quot;path/to/container.sif&quot;
+}
+</code></pre>
+<p>make sure a Fasta file and folder is selected. </p>
+<pre><code>params.fasta=&quot;phase1/human_g1k_v37_phiX.fasta.gz&quot;
+params.fastafolder=&quot;/apps/data/1000G/phase1/&quot;
+</code></pre>
+<p>See the drop documentation for downloading the external count files:
+https://github.com/gagneurlab/drop</p>
+<p>Configure external counts and a compatible gtf file.</p>
+<pre><code>params {
+    featurecounts {
+        genes_gtf=&quot;resources/gtf/gencode.v29lift37.annotation.gtf&quot;
+    }
+    extcounts {
+        counts=&quot;counts/GTEX/Whole_Blood--hg19--gencode29&quot;
+        amount_outrider=100
+        amount_fraser=100
+    }
+}
 </code></pre>
 <h2 id="using-the-pipeline">Using the pipeline</h2>
-<p>For usage it is recommended to use a high performance computing cluster with at least 100gb of ram available on a node.</p>
+<p>For usage it is recommended to use a high performance computing cluster with at least 64gb of ram available on a node.</p>
+<p>Run command example</p>
+<pre><code>nextflow run main.nf --output &quot;path/to/output/folder&quot; --samplesheet &quot;path/to/samplesheet&quot;
+</code></pre>
               
             </div>
           </div><footer>
