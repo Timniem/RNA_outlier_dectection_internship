@@ -58,6 +58,6 @@ process Outrider {
 
     script: 
         """
-        Rscript ${params.outrider.outriderR} "${outriderCounts}" "outrider.rds" "result_table.tsv" "${params.samplesheet}" "${externalCounts}" "${params.extcounts.amount_outrider}"
+        Rscript ${params.outrider.outriderR} "${outriderCounts}" "outrider.rds" "result_table_outrider.tsv" "${params.samplesheet}" "${externalCounts}" "${params.extcounts.amount_outrider}"
         """
 }

@@ -1,8 +1,7 @@
 # Welcome to the RNA outlier detection workflow
 
 ## Info
-This project is developed during an internship at the Systems Genetics departement UMC Groningen. Please be aware that it is still in development and may lack certain features or contain nasty bugs. If there are any questions or suggestions please contact me on:
-t.niemeijer@umcg.nl. 
+This project is developed during an internship at the Systems Genetics departement UMC Groningen. Please be aware that it is still in development and may lack certain features or contain nasty bugs. 
 
 ## Project overview
 ![pipeline overview](flowchart_example_pipeline_analysis.png)

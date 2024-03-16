@@ -1,7 +1,7 @@
 # Panel Dashboard
 
 
-To install the dashboard follow the same steps as shown in Quick start in [Pipeline](pipeline.md).
+For requirements check the dashboard_env.txt added to the outlier_analysis_dashboard folder.
 
 If the dashboard is run on a computing cluster, you want to forward the chosen port to a local machine.
 
