@@ -20,6 +20,7 @@ or alternatively using Apptainer:
 ```
 # Add the Sylabscloud to the remotes on Apptainer
 apptainer remote add --no-login SylabsCloud cloud.sylabs.io
+apptainer remote use SylabsCloud
 
 # if not already configured
 export APPTAINER_CACHEDIR=/path/to/tmp
