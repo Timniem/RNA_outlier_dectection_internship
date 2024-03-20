@@ -12,7 +12,7 @@ def main():
         mae_data = pd.read_csv(sys.argv[3], sep='\t')
     except FileNotFound:
         #creation of dummy data
-        mae_data = pd.DataFrame({"sampleID":[],"hgncSymbol", "padj":[], "log2FC":[] })
+        mae_data = pd.DataFrame({"sampleID":[],"hgncSymbol":[], "padj":[], "log2FC":[] })
     dashboard = Dashboard(fraser_data, outrider_data, mae_data).run()
     dashboard.servable()
 main()

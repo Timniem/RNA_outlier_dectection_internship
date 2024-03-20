@@ -8,7 +8,7 @@ class Widgets:
         self.fraser_data = fraser_data
         self.outrider_data = outrider_data
         self.mae_data = mae_data
-        self.patients = [patient for patient in mae_data.sampleID.unique()]
+        self.patients = [patient for patient in fraser_data.sampleID.unique()]
         self.plot_functions = PlotFunctions
         self.select_patient = pn.widgets.Select(name='Select Patient',options=self.patients, width=200)
         self.genepanel_filter = pn.widgets.Select(name='Select Genepanel', options=genepanels, width=200)
