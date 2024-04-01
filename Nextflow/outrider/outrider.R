@@ -16,6 +16,25 @@ library("org.Hs.eg.db")
 library("data.table")
 library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
+
+random_ext <- TRUE # experimental, add to config later
+
+
+#randomized sample selection
+random_extcounts <- function(external_count_amount, ext_counts){
+    # Function to randomly select specific counts. Adjusted for Outrider.
+    # - - - - - - - - - - - - - - - - - - - - - - 
+    # input: The required amount of randomly selected samples
+    # output: sorted list with random numbers is range of the ext counts
+
+    indices <- 2:ncol(ext_counts)
+    shuffled_indices <- sample(indices)
+    
+    return(shuffled_indices[1:external_count_amount])
+}
+
+
+
 if(.Platform$OS.type == "unix") {
     register(MulticoreParam(workers=min(4, multicoreWorkers())))
 } else {
@@ -29,17 +48,24 @@ rds_out_path <- args[2]
 res_out_path <- args[3]
 iter <- 15
 
+
 # Add external Counts
 if (length(args) >= 5){
     # By default add 100 external counts otherwise
     extctspath <- file.path(args[5],"geneCounts.tsv.gz")
     if (length(args) >= 6){
-        ext_amount <- as.numeric(args[6]) + 1 #+1 to account for the geneID
+        ext_amount <- as.numeric(args[6])
     } else {
-        ext_amount <- 101
+        ext_amount <- 100
     }
+
     extctsTable <- read.table(gzfile(extctspath), header=TRUE, sep="\t")
-    extctsTable <- extctsTable[,c(1:ext_amount)]
+    
+    if (random_ext){
+        extctsTable <- extctsTable[,c(1,random_extcounts(ext_amount, extctsTable))] # always include the first index
+    } else {
+        extctsTable <- extctsTable[,c(1,2:ext_amount +1)] # always include the first index
+    }
     count_data <- merge(x=ctsTable, y=extctsTable, by=c("GeneID"), all=TRUE)
 } else {
     count_data <- ctsTable
