@@ -26,10 +26,6 @@ while [[ $# -gt 0 ]]; do
 done
 set -- "${POSITIONAL_ARGS[@]}" # restore positional parameters
 
-eval "$(conda shell.bash hook)"
-source /groups/umcg-gdio/tmp01/umcg-tniemeijer/envs/mamba-env/etc/profile.d/mamba.sh
-mamba activate dashboard_env
-
 fraser_data="${DATA}/*fraser.tsv"
 outrider_data="${DATA}/*outrider.tsv"
 mae_data="${DATA}/*mae.tsv"

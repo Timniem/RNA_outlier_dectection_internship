@@ -10,9 +10,9 @@ def main():
     outrider_data = pd.read_csv(sys.argv[2], sep='\t')
     try:
         mae_data = pd.read_csv(sys.argv[3], sep='\t')
-    except FileNotFound:
+    except FileNotFoundError:
         #creation of dummy data
-        mae_data = pd.DataFrame({"sampleID":[],"hgncSymbol":[], "padj":[], "log2FC":[] })
+        mae_data = pd.DataFrame({"sampleID":[],"hgncSymbol":[], "pvalue":[],"padj":[], "log2FC":[] })
     dashboard = Dashboard(fraser_data, outrider_data, mae_data).run()
     dashboard.servable()
 main()
