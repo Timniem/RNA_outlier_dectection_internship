@@ -9,7 +9,9 @@ include { Fraser; MergeCounts; FraserCount } from "./fraser/fraser"
 include { MAEreadCounting; GetMAEresults } from "./MAE/MAE"
 
 workflow Outrider_nf {
-    /* Gagneurlab Outrider Nextflow implementation */
+    /* 
+    Gagneurlab Outrider Nextflow implementation 
+    */
     Channel
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )
@@ -23,9 +25,11 @@ workflow Outrider_nf {
 }
 
 workflow Fraser_nf {
-    /* Gagneurlab Fraser Nextflow implementation
+    /* 
+    Gagneurlab Fraser Nextflow implementation with external counts.
     Since it was a bit tricky to implement this parallized like Outrider
-    It makes sure that symbolic links to the *bam/bai files are included*/
+    It makes sure that symbolic links to the *bam/bai files are included
+    */
     bamfiles_ch = Channel
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )

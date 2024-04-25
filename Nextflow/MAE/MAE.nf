@@ -9,7 +9,7 @@ nextflow.enable.dsl=2
 
 
 process MAEreadCounting {
-    time '10h'
+    time '12h'
     memory '8 GB'
     cpus 1
 
@@ -40,11 +40,14 @@ process MAEreadCounting {
     exit 1
     fi
 
+    # remove INFO field, it sometimes contains whitespace or invalid line lengths. 
+    bcftools annotate -x 'INFO' "$vcf" -o ${sampleID}_noinfo.vcf
+
     # create index
-    gatk IndexFeatureFile -I "$vcf"
+    gatk IndexFeatureFile -I "${sampleID}_noinfo.vcf"
 
     # Only select hetzyg variants and only SNP's
-    gatk SelectVariants -V $vcf -O "${sampleID}_temp.vcf" -R "${fasta}" --restrict-alleles-to BIALLELIC -select 'vc.getHetCount()==1' --select-type-to-include SNP
+    gatk SelectVariants -V ${sampleID}_noinfo.vcf -O "${sampleID}_temp.vcf" -R "${fasta}" --restrict-alleles-to BIALLELIC -select 'vc.getHetCount()==1' --select-type-to-include SNP
 
     # remove duplicates
     bcftools norm --rm-dup all "${sampleID}_temp.vcf" > "${sampleID}_temp.vcf.tmp" && mv "${sampleID}_temp.vcf.tmp" "${sampleID}_temp.vcf"
@@ -79,7 +82,7 @@ process GetMAEresults {
 
     script:
         """
-        Rscript "${resultsR}" "${asecounts}" "${sampleid}_result_mae.tsv"
+        Rscript "${resultsR}" "${asecounts}" "${sampleid}_result_mae.tsv" "${sampleid}"
         """
 
 }

@@ -92,11 +92,11 @@ class PlotFunctions:
         if gene_panel != 'none':
             with open(f'resources/gene_panels/{gene_panel}.txt') as gene_file:
                 genes = [line.strip() for line in gene_file]
-            significant_data = data[(data.padj < p_cutoff) & (abs(data.log2FC) > log2fc_cutoff) & (data.hgncSymbol.isin(genes))]
-            rest_data = data[(data.padj > p_cutoff) | (abs(data.log2FC) < log2fc_cutoff) | (~data.hgncSymbol.isin(genes))]
+            significant_data = data[(data.padjust < p_cutoff) & (abs(data.log2FC) > log2fc_cutoff) & (data.hgncSymbol.isin(genes))]
+            rest_data = data[(data.padjust > p_cutoff) | (abs(data.log2FC) < log2fc_cutoff) | (~data.hgncSymbol.isin(genes))]
         else:
-            significant_data = data[(data.padj < p_cutoff) & (abs(data.log2FC) > log2fc_cutoff)]
-            rest_data = data[(data.padj > p_cutoff) | (abs(data.log2FC) < log2fc_cutoff)]
+            significant_data = data[(data.padjust < p_cutoff) & (abs(data.log2FC) > log2fc_cutoff)]
+            rest_data = data[(data.padjust > p_cutoff) | (abs(data.log2FC) < log2fc_cutoff)]
     
         x_range = rest_data.log2FC
         y_range = -np.log(rest_data.pvalue)
