@@ -4,7 +4,7 @@ author: T Niemeijer
 **/
 nextflow.enable.dsl=2
 
-include { Outrider; OutriderCount; MergeOutridercounts } from "./outrider/outrider"
+include { Outrider; OutriderCount; MergeOutridercounts; CreateOutriderDataset; OutriderOptim } from "./outrider/outrider"
 include { Fraser; MergeCounts; FraserCount } from "./fraser/fraser"
 include { MAEreadCounting; GetMAEresults } from "./MAE/MAE"
 
@@ -12,6 +12,8 @@ workflow Outrider_nf {
     /* 
     Gagneurlab Outrider Nextflow implementation 
     */
+
+    // Start Channel from samplesheet, parsing 
     Channel
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )
@@ -20,8 +22,28 @@ workflow Outrider_nf {
     | collect
     | set { merge_ch }
 
-    MergeOutridercounts(merge_ch, params.outrider.mergecountsR)
-    Outrider(MergeOutridercounts.out, params.extcounts.blood)
+    merge_ch
+    | map { it -> [ it, params.outrider.mergecountsR ] }
+    | MergeOutridercounts
+    | map { it -> [ it, params.outrider.outriderDatasetR ] }
+    | CreateOutriderDataset
+    | set { optim_ch }
+
+    optim_ch
+    .map { it -> it[1] }.view()
+    .splitCsv( header: false, sep: '\t' )
+    .map { row -> tuple( "$params.output/outrider/outrider.rds", row, params.outrider.outriderOptimR )} //Hacky to include the workdir's outrider.
+    | OutriderOptim
+    
+
+    /* 
+    Channel
+    .of( CreateOutriderDataset.out ).view()
+    .splitCsv( header: true, sep: '\t' ) 
+    .map { row -> row.qValues }
+    .view()
+    */
+
 }
 
 workflow Fraser_nf {
@@ -38,7 +60,7 @@ workflow Fraser_nf {
     baifiles_ch = bamfiles_ch.map { bamFile -> "${bamFile}.bai" }
 
     FraserCount(params.fraser.frasercountsR, params.samplesheet, bamfiles_ch.collect(), baifiles_ch.collect())
-    MergeCounts(params.extcounts.blood, params.fraser.mergescriptR, FraserCount.out, params.extcounts.amount_fraser)
+    MergeCounts(params.extcounts.folder, params.fraser.mergescriptR, FraserCount.out, params.extcounts.amount_fraser)
     Fraser(params.samplesheet, MergeCounts.out, params.fraser.fraserR)
 }
 
@@ -56,6 +78,6 @@ workflow MAE_nf {
 
 workflow {
     Outrider_nf()
-    Fraser_nf()
-    MAE_nf()
+    //Fraser_nf()
+    //MAE_nf()
 }
