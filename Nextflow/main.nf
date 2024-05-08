@@ -4,7 +4,7 @@ author: T Niemeijer
 **/
 nextflow.enable.dsl=2
 
-include { Outrider; OutriderCount; MergeOutridercounts; CreateOutriderDataset; OutriderOptim } from "./outrider/outrider"
+include { Outrider; OutriderCount; MergeOutridercounts; CreateOutriderDataset; OutriderOptim; MergeQfiles } from "./outrider/outrider"
 include { Fraser; MergeCounts; FraserCount } from "./fraser/fraser"
 include { MAEreadCounting; GetMAEresults } from "./MAE/MAE"
 
@@ -13,7 +13,7 @@ workflow Outrider_nf {
     Gagneurlab Outrider Nextflow implementation 
     */
 
-    // Start Channel from samplesheet, parsing 
+    // Start Channel from the samplesheet, getting the required info per sample for featureCounts.
     Channel
     .fromPath( params.samplesheet )
     .splitCsv( header: true, sep: '\t' )
@@ -22,28 +22,28 @@ workflow Outrider_nf {
     | collect
     | set { merge_ch }
 
+    // Merge the separate counts from the merge channel and create a OUTRIDER Dataset
     merge_ch
-    | map { it -> [ it, params.outrider.mergecountsR ] }
     | MergeOutridercounts
-    | map { it -> [ it, params.outrider.outriderDatasetR ] }
+    | map { it -> tuple( it, params.samplesheet ) }
     | CreateOutriderDataset
     | set { optim_ch }
 
+    // Find the optimal Q for the dataset.
     optim_ch
-    .map { it -> it[1] }.view()
+    .map { it -> it[1] }
     .splitCsv( header: false, sep: '\t' )
-    .map { row -> tuple( "$params.output/outrider/outrider.rds", row, params.outrider.outriderOptimR )} //Hacky to include the workdir's outrider.
+    .map { row -> tuple( "$params.output/outrider/outrider.rds", row )} //Hacky to include the outputdir outrider.rds.
     | OutriderOptim
-    
+    | collect
+    | MergeQfiles
+    | set { outrider_ch }
 
-    /* 
-    Channel
-    .of( CreateOutriderDataset.out ).view()
-    .splitCsv( header: true, sep: '\t' ) 
-    .map { row -> row.qValues }
-    .view()
-    */
-
+    // Start OUTRIDER
+    outrider_ch
+    | map { it -> tuple( "$params.output/outrider/outrider.rds", it )} //Hacky to include the outputdir outrider.rds.
+    | Outrider
+ 
 }
 
 workflow Fraser_nf {

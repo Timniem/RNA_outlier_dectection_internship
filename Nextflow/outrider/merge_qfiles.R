@@ -11,7 +11,7 @@ for (file in qFiles) {
     q_matrices[[length(q_matrices) + 1]] <- read.table(file, header=TRUE, sep="\t")
 }
 
-qTable <- Reduce(function(x, y) merge(x, y, by.x='GeneID', by.y='GeneID', all.x=TRUE), q_matrices)
+qTable <- do.call("rbind", q_matrices)
 
 # Write counts to file.
 write.table(qTable, file="merged_q_files.tsv", sep="\t" ,row.names=FALSE, col.names=TRUE)

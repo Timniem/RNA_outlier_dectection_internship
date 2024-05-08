@@ -32,13 +32,13 @@ process MergeOutridercounts {
     publishDir "$params.output/counts", mode: 'copy'
 
     input:
-        tuple path(inputFiles), path(mergescript)
+        path inputFiles 
     output:
         path "merged_outrider_counts.txt"
     script:
     
         """
-        Rscript ${mergescript} ${inputFiles}
+        Rscript ${params.outrider.mergecountsR} ${inputFiles}
         """
 }
 
@@ -51,39 +51,39 @@ process CreateOutriderDataset{
     publishDir "$params.output/outrider", mode: 'copy'
 
     input:
-        tuple path(outriderCounts), path(createOutriderDsScript)
+        tuple path(outriderCounts), path(samplesheet)
     output:
         tuple path("outrider.rds"), path("q_values.txt")
 
     script: 
         """
-        Rscript ${createOutriderDsScript} "${outriderCounts}" "outrider.rds" "${params.samplesheet}" "${params.extcounts.folder}" "${params.extcounts.amount_outrider}"
+        Rscript ${params.outrider.outriderDatasetR} "${outriderCounts}" "${samplesheet}" "${params.extcounts.folder}" "${params.extcounts.amount_outrider}"
         """
 }
 
 process OutriderOptim{
     // Outrider optimize functions
-    time '30m'
+    time '1h'
     memory '16 GB'
     cpus 1
 
     publishDir "$params.output/outrider/encdims", mode: 'copy'
 
     input:
-        tuple path(outriderDataset), val(q_value), path(outriderOptimScript)
+        tuple path(outriderDataset), val(q_value)
     output:
         path "*.tsv" // file with encdims specific to this Q.
 
     script: 
         """
-        Rscript ${outriderOptimScript} "${outriderDataset}" "${q_value}"
+        Rscript ${params.outrider.outriderOptimR} "${outriderDataset}" "${q_value}"
         """
 }
 
 process MergeQfiles {
     // Outrider optimize functions
-    time '1h'
-    memory '16 GB'
+    time '10m'
+    memory '1 GB'
     cpus 1
     
     publishDir "$params.output/counts", mode: 'copy'
@@ -91,10 +91,10 @@ process MergeQfiles {
     input:
         path inputFiles
     output:
-        path "merged_outrider_counts.txt"
+        path "merged_q_files.tsv"
     script:
         """
-        Rscript ${mergescript} ${inputFiles}
+        Rscript ${params.outrider.mergeQFiles} ${inputFiles}
         """
 }
 
@@ -106,14 +106,13 @@ process Outrider {
     publishDir "$params.output/outrider", mode: 'copy'
 
     input:
-        path outriderDataset
-        val best_q
+        tuple path(outriderDataset), path(qfile)
     output:
         path "*.rds"
         path "*.tsv"
 
     script: 
         """
-        Rscript ${params.outrider.outriderR} "${outriderDataset}" "outrider.rds" "result_table_outrider.tsv"
+        Rscript ${params.outrider.outriderR} "${outriderDataset}" "${qfile}" "outrider.rds" "result_table_outrider.tsv"
         """
 }

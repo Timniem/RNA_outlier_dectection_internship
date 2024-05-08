@@ -2,10 +2,9 @@
 #' Script creates ods objects and a list of Q's for optimization.
 #' 07-05-2024
 #' Argument 1= input path counts file
-#' Argument 2= output path ods
-#' Argument 3= samplesheet
-#' Argument 4= external count path
-#' Argument 5= amount ext. counts
+#' Argument 2= samplesheet
+#' Argument 3= external count path
+#' Argument 4= amount ext. counts
 
 library(OUTRIDER)
 library(dplyr)
@@ -36,17 +35,16 @@ random_extcounts <- function(external_count_amount, ext_counts){
 
 args <- commandArgs(trailingOnly = TRUE)
 ctsTable <- read.table(args[1], header=TRUE, sep="\t")
-samplesheet <- read.table(args[3], header=TRUE, sep="\t")
-rds_out_path <- args[2]
+samplesheet <- read.table(args[2], header=TRUE, sep="\t")
 iter <- 15
 
 
 # Add external Counts / refactor to mandatory amount of ext counts?
-if (length(args) >= 4){
+if (length(args) >= 3){
     # By default add 100 external counts otherwise
-    extctspath <- file.path(args[4],"geneCounts.tsv.gz")
-    if (length(args) >= 5){
-        ext_amount <- as.numeric(args[5])
+    extctspath <- file.path(args[3],"geneCounts.tsv.gz")
+    if (length(args) >= 4){
+        ext_amount <- as.numeric(args[4])
     } else {
         ext_amount <- 100
     }
@@ -89,4 +87,4 @@ qValues <- pars_q
 
 # Output ODS and Q list
 write.table(data.frame(qValues), file="q_values.txt", sep="\t" ,row.names=FALSE, col.names=FALSE)
-saveRDS(ods, file=rds_out_path)
+saveRDS(ods, file="outrider.rds")
