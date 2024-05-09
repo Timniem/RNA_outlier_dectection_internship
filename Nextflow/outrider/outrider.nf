@@ -25,39 +25,92 @@ process OutriderCount {
 }
 
 process MergeOutridercounts {
-    time '1h'
+    time '30m'
     memory '16 GB'
     cpus 1
     
     publishDir "$params.output/counts", mode: 'copy'
 
     input:
-        path inputFiles
-        path mergescript
+        path inputFiles 
     output:
         path "merged_outrider_counts.txt"
     script:
+    
         """
-        Rscript ${mergescript} ${inputFiles}
+        Rscript ${params.outrider.mergecountsR} ${inputFiles}
         """
 }
 
-process Outrider {
-    time '10h'
-    memory '64 GB'
-    cpus 4
+
+process CreateOutriderDataset{
+    time '30m'
+    memory '12 GB'
+    cpus 1
 
     publishDir "$params.output/outrider", mode: 'copy'
 
     input:
-        path outriderCounts
-        path externalCounts
+        tuple path(outriderCounts), path(samplesheet)
+    output:
+        tuple path("outrider.rds"), path("q_values.txt")
+
+    script: 
+        """
+        Rscript ${params.outrider.outriderDatasetR} "${outriderCounts}" "${samplesheet}" "${params.extcounts.folder}" "${params.extcounts.amount_outrider}"
+        """
+}
+
+process OutriderOptim{
+    // Outrider optimize functions
+    time '4h'
+    memory '12 GB'
+    cpus 1
+
+    input:
+        tuple path(outriderDataset), val(q_value)
+    output:
+        path "*.tsv" // file with encdims specific to this Q.
+
+    script: 
+        """
+        Rscript ${params.outrider.outriderOptimR} "${outriderDataset}" "${q_value}"
+        """
+}
+
+process MergeQfiles {
+    // Outrider optimize functions
+    time '10m'
+    memory '1 GB'
+    cpus 1
+    
+    publishDir "$params.output/outrider/optim", mode: 'copy'
+
+    input:
+        path inputFiles
+    output:
+        path "merged_q_files.tsv"
+    script:
+        """
+        Rscript ${params.outrider.mergeQFiles} ${inputFiles}
+        """
+}
+
+process Outrider {
+    time '4h'
+    memory '12 GB'
+    cpus 1
+
+    publishDir "$params.output/outrider", mode: 'copy'
+
+    input:
+        tuple path(outriderDataset), path(qfile), path(samplesheet)
     output:
         path "*.rds"
         path "*.tsv"
 
     script: 
         """
-        Rscript ${params.outrider.outriderR} "${outriderCounts}" "outrider.rds" "result_table_outrider.tsv" "${params.samplesheet}" "${externalCounts}" "${params.extcounts.amount_outrider}"
+        Rscript ${params.outrider.outriderR} "${outriderDataset}" "${qfile}" "${samplesheet}" "final_outrider.rds" "result_table_outrider.tsv"
         """
 }
