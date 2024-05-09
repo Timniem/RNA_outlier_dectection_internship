@@ -2,8 +2,10 @@
 #' Script creates ods objects
 #' Argument 1= input path ods
 #' Argument 2= qfile
+#' Argument 3= samplesheet
 #' Argument 3= output path ods
 #' Argument 4= output path res
+
 
 
 library(OUTRIDER)
@@ -27,14 +29,16 @@ args <- commandArgs(trailingOnly = TRUE)
 # Open OUTRIDER dataset
 ods <- readRDS(args[1])
 qtable <- read.table(args[2], header=TRUE, sep="\t")
+samplesheet <- fread(args[3])
+
 
 # Get the encodingDimension with the highest evaluation Loss
 opt_q <- qtable$encodingDimension[which.max(qtable$evaluationLoss)]
 
 print(paste0("Optimal q is: ",opt_q))
 
-rds_out_path <- args[3]
-res_out_path <- args[4]
+rds_out_path <- args[4]
+res_out_path <- args[5]
 
 iter <- 15
 

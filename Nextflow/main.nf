@@ -41,7 +41,7 @@ workflow Outrider_nf {
 
     // Start OUTRIDER
     outrider_ch
-    | map { it -> tuple( "$params.output/outrider/outrider.rds", it )} //Hacky to include the outputdir outrider.rds.
+    | map { it -> tuple( "$params.output/outrider/outrider.rds", it, params.samplesheet )} //Hacky to include the outputdir outrider.rds.
     | Outrider
  
 }

@@ -63,11 +63,9 @@ process CreateOutriderDataset{
 
 process OutriderOptim{
     // Outrider optimize functions
-    time '1h'
-    memory '16 GB'
+    time '4h'
+    memory '32 GB'
     cpus 1
-
-    publishDir "$params.output/outrider/encdims", mode: 'copy'
 
     input:
         tuple path(outriderDataset), val(q_value)
@@ -86,7 +84,7 @@ process MergeQfiles {
     memory '1 GB'
     cpus 1
     
-    publishDir "$params.output/counts", mode: 'copy'
+    publishDir "$params.output/outrider/optim", mode: 'copy'
 
     input:
         path inputFiles
@@ -99,20 +97,20 @@ process MergeQfiles {
 }
 
 process Outrider {
-    time '10h'
-    memory '64 GB'
-    cpus 4
+    time '4h'
+    memory '32 GB'
+    cpus 1
 
     publishDir "$params.output/outrider", mode: 'copy'
 
     input:
-        tuple path(outriderDataset), path(qfile)
+        tuple path(outriderDataset), path(qfile), path(samplesheet)
     output:
         path "*.rds"
         path "*.tsv"
 
     script: 
         """
-        Rscript ${params.outrider.outriderR} "${outriderDataset}" "${qfile}" "outrider.rds" "result_table_outrider.tsv"
+        Rscript ${params.outrider.outriderR} "${outriderDataset}" "${qfile}" "${samplesheet}" "final_outrider.rds" "result_table_outrider.tsv"
         """
 }
