@@ -64,9 +64,10 @@ process Fraser {
     output:
 
         path "*.tsv"
+        path output
 
     script: 
         """
-        Rscript "${fraserR}" "${samplesheet}" "${output}"
+        Rscript "${fraserR}" "${samplesheet}" "${output}" "${params.genomeReferenceBuild}"
         """
 }

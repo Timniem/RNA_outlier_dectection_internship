@@ -3,9 +3,13 @@
 #' Processes start from a samplesheet with SampleID's BAM paths featurecount settings etc. 
 #' and creates fraser rds object and results .tsv
 #' 28-10-2023
-#' Argument 1: Samplesheet
+#' Argument 1= Samplesheet
 #' Argument 2= input/output folder
+#' Argument 3= genome reference (hg19 or hg38)
 
+library(org.Hs.eg.db)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+library(TxDb.Hsapiens.UCSC.hg38.knownGene)
 library(FRASER)
 library(dplyr)
 
@@ -35,14 +39,20 @@ fds <- optimHyperParams(fds, type="jaccard", plot=FALSE)
 best_q <- bestQ(fds, type="jaccard")
 fds <- FRASER(fds, q=c(jaccard=best_q))
 
-# Using different method of annotation
-#library(TxDb.Hsapiens.UCSC.hg19.knownGene)
-#library(org.Hs.eg.db)
-#txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
-#orgDb <- org.Hs.eg.db
-#fds <- annotateRangesWithTxDb(fds, txdb=txdb, orgDb=orgDb)
 
-fds <- annotateRanges(fds) # previous method
+if(args[3] == "hg19"){
+    txdb <- TxDb.Hsapiens.UCSC.hg19.knownGene
+} else if(args[3] == "hg38") {
+    txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene
+} else {
+    txdb <- TxDb.Hsapiens.UCSC.hg38.knownGene #default to hg38
+}
+
+orgDb <- org.Hs.eg.db
+
+fds <- annotateRangesWithTxDb(fds, txdb=txdb, orgDb=orgDb)
+
+#fds <- annotateRanges(fds)
 
 fds <- calculatePadjValues(fds, type="jaccard", geneLevel=TRUE) # geneLevel TRUE -> FALSE
 
