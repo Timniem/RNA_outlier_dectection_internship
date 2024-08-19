@@ -52,7 +52,13 @@ orgDb <- org.Hs.eg.db
 
 fds <- annotateRangesWithTxDb(fds, txdb=txdb, orgDb=orgDb)
 
-#fds <- annotateRanges(fds)
+#if(args[3] == "hg19"){
+    #fds <- annotateRanges(fds, GRCh=37)
+#} else if(args[3] == "hg38") {
+#    fds <- annotateRanges(fds, GRCh=38)
+#} else {
+#    fds <- annotateRanges(fds, GRCh=38) #default to hg38
+#}
 
 fds <- calculatePadjValues(fds, type="jaccard", geneLevel=TRUE) # geneLevel TRUE -> FALSE
 

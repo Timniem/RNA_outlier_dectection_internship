@@ -64,7 +64,7 @@ process CreateOutriderDataset{
 process OutriderOptim{
     // Outrider optimize functions
     time '4h'
-    memory '12 GB'
+    memory '16 GB'
     cpus 1
 
     input:
@@ -98,7 +98,7 @@ process MergeQfiles {
 
 process Outrider {
     time '4h'
-    memory '12 GB'
+    memory '16 GB'
     cpus 1
 
     publishDir "$params.output/outrider", mode: 'copy'
