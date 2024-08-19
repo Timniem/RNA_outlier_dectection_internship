@@ -64,7 +64,7 @@ process CreateOutriderDataset{
 process OutriderOptim{
     // Outrider optimize functions
     time '4h'
-    memory '12 GB'
+    memory '16 GB'
     cpus 1
 
     input:
@@ -98,7 +98,7 @@ process MergeQfiles {
 
 process Outrider {
     time '4h'
-    memory '12 GB'
+    memory '16 GB'
     cpus 1
 
     publishDir "$params.output/outrider", mode: 'copy'
@@ -111,6 +111,6 @@ process Outrider {
 
     script: 
         """
-        Rscript ${params.outrider.outriderR} "${outriderDataset}" "${qfile}" "${samplesheet}" "final_outrider.rds" "result_table_outrider.tsv"
+        Rscript ${params.outrider.outriderR} "${outriderDataset}" "${qfile}" "${samplesheet}" "final_outrider.rds" "result_table_outrider.tsv" "${params.genomeReferenceBuild}"
         """
 }

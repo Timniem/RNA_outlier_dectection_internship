@@ -24,8 +24,15 @@ workdir <- args[2]
 args <- commandArgs(trailingOnly = TRUE)
 settingsTable <- fread(args[1])
 settingsTable$bamFile <- basename(settingsTable$bamFile)
+# strand specific not implemented, it will hang and exceed the time limit. 
+# transforming strandSpecific in FRASER module required syntax (0=FALSE, 1=TRUE, 2="reverse")
+#settingsTable$strandSpecific <- ifelse(settingsTable$strandSpecific == 0, "unstranded",
+                                #ifelse(settingsTable$strandSpecific == 1, "stranded", "reverse"))
 
 fds <- FraserDataSet(colData=settingsTable, workingDir=workdir)
+#strandSpecific(fds) <- settingsTable$strandSpecific
+# show info
+fds
 fds <- countRNAData(fds)
 fds <- calculatePSIValues(fds)
 fds <- saveFraserDataSet(fds)

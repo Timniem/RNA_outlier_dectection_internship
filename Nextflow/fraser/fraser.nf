@@ -7,8 +7,8 @@ nextflow.enable.dsl=2
 
 process FraserCount {
     time '4h'
-    memory '32 GB'
-    cpus 4
+    memory '64 GB'
+    cpus 6
 
     input:
         path frasercountR
@@ -64,9 +64,10 @@ process Fraser {
     output:
 
         path "*.tsv"
+        path output
 
     script: 
         """
-        Rscript "${fraserR}" "${samplesheet}" "${output}"
+        Rscript "${fraserR}" "${samplesheet}" "${output}" "${params.genomeReferenceBuild}"
         """
 }
